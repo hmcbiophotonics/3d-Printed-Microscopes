@@ -20,7 +20,7 @@ $ curl -sfL https://direnv.net/install.sh | bash
 Once direnv has been setup, you should be able to just run
 
 ```sh
-$ hmscope
+$ hmscope.py
 ```
 
 ## Ongoing Project(s)
