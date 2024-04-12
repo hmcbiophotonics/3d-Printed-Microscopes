@@ -11,6 +11,6 @@ implemented onto the 3D printed microscope platform.
 
 * FPM (Fourier Ptychographic Microscopy)
 
-## DATASET MANAGEMENT
+## REPO STRUCTURE
 
-To keep repo organized. Put all captured data in `datasets/` directory
+* To keep repo organized. Put all captured data in `datasets/` directory
