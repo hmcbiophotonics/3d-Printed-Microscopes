@@ -7,17 +7,20 @@
 `3d-printed-Microscopes` is a monorepo consisting of various projects
 implemented onto the 3D printed microscope platform.
 
-### Setting up direnv (optional)
+### Setting up direnv
+
 1. Install [direnv] for your package manager or alternatively:
 ```sh
 $ curl -sfL https://direnv.net/install.sh | bash
 ```
 2. Once installed [hook direnv into your shell]
-### Without direnv
+
+### hmscope
+
+Once direnv has been setup, you should be able to just run
+
 ```sh
-$ python3 -m venv .venv
-$ python3 -m pip install -r requirements.txt
-$ source .venv/bin/activate
+$ hmscope
 ```
 
 ## Ongoing Project(s)
