@@ -7,6 +7,8 @@
 `3d-printed-Microscopes` is a monorepo consisting of various projects
 implemented onto the 3D printed microscope platform.
 
+### Requirements
+
 ### Setting up direnv
 
 1. Install [direnv] for your package manager or alternatively:

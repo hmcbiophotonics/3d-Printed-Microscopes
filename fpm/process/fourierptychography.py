@@ -163,12 +163,15 @@ Returns:
         if (ky2.size > m1) : ky2 = ky2[:-1]
 
         [kxm,kym] = np.meshgrid(kx2,ky2)
+
         CTF = ((kxm**2 + kym**2) < cutoffFrequency**2) #Coherent Transfer Function Filter
 
         seq = self.make_spiral_seq(3,3,self.config["arraysize"])
 
         recoveredObject = np.ones((m,n))
         recoveredObjectFT = np.fft.fftshift(np.fft.fft2(recoveredObject))
+
+        trackRecoveredFT = []
 
         loop = 3
         for tt in range(loop):
@@ -187,6 +190,9 @@ Returns:
                 lowResFT = np.fft.fftshift(np.fft.fft2(lowResIm)) * CTF
                 recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = (1-CTF) * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] + lowResFT
 
+                if (tt == 0):
+                    trackRecoveredFT.append(recoveredObjectFT.copy())
+
         recoveredObject = np.fft.ifft2(np.fft.ifftshift(recoveredObjectFT))
 
-        return recoveredObject
+        return recoveredObject, recoveredObjectFT, trackRecoveredFT

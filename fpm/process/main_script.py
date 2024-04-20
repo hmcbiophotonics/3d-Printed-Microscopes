@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 from fourierptychography import FourierPtychography as FP
+from plot import Plot
 from matplotlib import pyplot as plt
+from matplotlib.widgets import Slider
 import numpy as np
 import os
 import sys
@@ -17,7 +19,7 @@ object_dist        = (1 + magnification) / magnification * focal_length
 image_dist         = magnification * object_dist
 num_aperture       = np.sin(np.arctan(0.5 * aperture_diameter / (object_dist -
                                                                  front_stop_sep)))
-num_aperture       = 0.15
+num_aperture       = 0.11
 wavelength         = 623e-9
 sensor_pixel_size  = 1.12e-6 * 2 / magnification
 led_dist_to_sample = 60e-3
@@ -61,15 +63,11 @@ FPM.create_configuration(config)
 [numim,m,n] = sample.shape
 packed = np.zeros((numim,int(m/2),int(n/2)))
 packed = sample[:,1::2,1::2]
-[cx,cy] = FP.get_LED_center(packed[24])
+[cx,cy] = FP.get_LED_center(packed[24].copy())
 
-size = 64
+size = 128
 cropped = packed[:,cy-size:cy+size,cx-size:cx+size]
 
-recovered = FPM.recover(cropped)
+recovered, recoveredFT, trackRecoveredFT = FPM.recover(cropped)
 
-fig, axs = plt.subplots(1,2)
-axs[0].imshow(cropped[25])
-axs[1].imshow(abs(recovered))
-
-plt.show()
+PLOT = Plot(cropped, recoveredFT, trackRecoveredFT)
