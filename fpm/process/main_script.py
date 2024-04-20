@@ -66,4 +66,10 @@ packed = sample[:,1::2,1::2]
 size = 64
 cropped = packed[:,cy-size:cy+size,cx-size:cx+size]
 
-FPM.recover(cropped)
+recovered = FPM.recover(cropped)
+
+fig, axs = plt.subplots(1,2)
+axs[0].imshow(cropped[25])
+axs[1].imshow(abs(recovered))
+
+plt.show()

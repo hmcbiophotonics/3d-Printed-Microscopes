@@ -170,9 +170,6 @@ Returns:
         recoveredObject = np.ones((m,n))
         recoveredObjectFT = np.fft.fftshift(np.fft.fft2(recoveredObject))
 
-        frames = []
-
-
         loop = 3
         for tt in range(loop):
             for i3 in range(numim):
@@ -189,88 +186,7 @@ Returns:
                 lowResIm = (m/m1)**2 * seqlowres[i2,:,:] * np.exp(1j * np.angle(lowResIm))
                 lowResFT = np.fft.fftshift(np.fft.fft2(lowResIm)) * CTF
                 recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = (1-CTF) * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] + lowResFT
-                if (tt == 0):
-                    #frames.append(np.log(np.abs(recoveredObjectFT)))
-                    frames.append(np.abs(np.fft.ifft2(np.fft.ifftshift(recoveredObjectFT))))
-                    #frames.append(np.log(np.abs(np.fft.fftshift(np.fft.fft2(seqlowres[i3])))))
-                    continue
-        
+
         recoveredObject = np.fft.ifft2(np.fft.ifftshift(recoveredObjectFT))
-
-        n=11
-
-        # display results
-        plt.figure()
-        plt.set_cmap("gray")
-        plt.imshow(seqlowres[n])
-        cbar = plt.colorbar(fraction = 0.047*(seqlowres.shape[1]/seqlowres.shape[2]))
-        cbar.set_label("Amplitude [a.u.]")
-        plt.title("Input amplitude")
-        ax = plt.gca()
-        ax.set_xticks([])
-        ax.set_yticks([])
-        
-        plt.figure()
-        plt.imshow(abs(recoveredObject))
-        cbar = plt.colorbar(fraction = 0.047*(recoveredObject.shape[0]/recoveredObject.shape[1]))
-        cbar.set_label("Amplitude [a.u.]")
-        plt.title("Recovered amplitude")
-        ax = plt.gca()
-        ax.set_xticks([])
-        ax.set_yticks([])
-        
-        
-        plt.figure()
-        plt.imshow(np.angle(recoveredObject))
-        plt.title("Recovered phase")
-        ax = plt.gca()
-        ax.set_xticks([])
-        ax.set_yticks([])
-        
-        
-        plt.figure()
-        plt.imshow(np.log(abs(recoveredObjectFT)))
-        plt.title("Recovered FT")
-        ax = plt.gca()
-        ax.set_xticks([])
-        ax.set_yticks([])
-
-        plt.figure()
-        plt.imshow(np.log(np.abs(np.fft.fftshift(np.fft.fft2(seqlowres[n])))))
-        plt.title("Original FT")
-        ax = plt.gca()
-        ax.set_xticks([])
-        ax.set_yticks([])
-
-        plt.figure()
-        plt.imshow(seqlowres[n])
-        plt.title("Corresponding LowResIm")
-        ax = plt.gca()
-        ax.set_xticks([])
-        ax.set_yticks([])
-
-        plt.figure()
-        #plt.imshow(np.log(np.abs(frames[11])))
-        plt.imshow(CTF)
-        plt.title("CTF")
-        ax = plt.gca()
-        ax.set_xticks([])
-        ax.set_yticks([])
-
-        
-        fig, ax = plt.subplots()
-        ims = []
-        for i in range(len(frames)):
-            im = ax.imshow(frames[i], animated = True)
-            ims.append([im])
-        
-        plt.title("Recovered FT Animation")
-        ax = plt.gca()
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ani = animation.ArtistAnimation(fig,ims, interval=500, blit=True, repeat_delay = 0)
-        
-        plt.show()
-
 
         return recoveredObject
