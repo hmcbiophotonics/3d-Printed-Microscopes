@@ -4,6 +4,11 @@ import os
 import sys
 import argparse
 import subprocess
+import paramiko
+
+username = 'hmcbiophotonics'
+hostname = 'raspberrypi.local'
+key_filename = ''
 
 def subcommand_process(args):
     cwd = os.getcwd()
@@ -16,6 +21,22 @@ def subcommand_process(args):
 
     exec = os.path.join(cwd,args.module,'process','main_script.py')
     subprocess.run(['python3',exec,args.dataset])
+
+def subcommand_rpi_connect(args):
+    client = paramiko.client.SSHClient()
+    client.load_system_host_keys()
+    client.connect(hostname=hostname,
+                   username=username,
+                   key_filename=key_filename)
+    stdin, stdout, stderr = client.exec_command('ls -l')
+
+def subcommand_rpi_sync(args):
+    # any remote rpi commands should go here
+    print("Syncing into pi")
+
+def subcommand_rpi_capture(args):
+    print("Capturing module")
+
 
 
 def main(argv=None):
@@ -35,9 +56,25 @@ def main(argv=None):
     parser_process.add_argument('dataset', type=str, help='dataset to process')
     parser_process.set_defaults(handler=subcommand_process)
 
+    parser_rpi = subparsers.add_parser('rpi', help = 'remote rpi commands')
+    subparsers_rpi = parser_rpi.add_subparsers(dest = 'rpi_operation')
+
+    subparser_rpi_sync = subparsers_rpi.add_parser('sync', help = 'syncs with rpi')
+    subparser_rpi_sync.set_defaults(handler=subcommand_rpi_sync)
+
+    subparser_rpi_capture = subparsers_rpi.add_parser('capture', help = 'captures based on module')
+    subparser_rpi_capture.add_argument('module', type=str, help = 'capture module')
+    subparser_rpi_capture.set_defaults(handler=subcommand_rpi_capture)
+
+    subparser_rpi_connect = subparsers_rpi.add_parser('connect')
+    subparser_rpi_connect.set_defaults(handler=subcommand_rpi_connect)
+
     args = parser.parse_args(argv)
     if args.operation is None:
         parser.print_help()
+        sys.exit(1)
+    if args.operation == 'rpi' and args.rpi_operation is None:
+        parser_rpi.print_help()
         sys.exit(1)
     args.handler(args)
 
