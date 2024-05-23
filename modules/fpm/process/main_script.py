@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 from fourierptychography import FourierPtychography as FP
 from plot import Plot
 from matplotlib import pyplot as plt
@@ -15,13 +14,14 @@ f_stop             = 2.0
 aperture_diameter  = focal_length / f_stop
 front_stop_sep     = 1e-3
 magnification      = 1.5049504950495052
-object_dist        = (1 + magnification) / magnification * focal_length
+object_dist        = ((1 + magnification) / magnification) * focal_length
 image_dist         = magnification * object_dist
 num_aperture       = np.sin(np.arctan(0.5 * aperture_diameter / (object_dist -
                                                                  front_stop_sep)))
 num_aperture       = 0.11
 wavelength         = 623e-9
-sensor_pixel_size  = 1.12e-6 * 2 / magnification
+#sensor_pixel_size  = 1.12e-6 * 2 / magnification
+sensor_pixel_size  = 1.12e-6
 led_dist_to_sample = 60e-3
 led_separation     = 3.175e-3
 led_number         = 8
@@ -70,4 +70,4 @@ cropped = packed[:,cy-size:cy+size,cx-size:cx+size]
 
 recovered, recoveredFT, trackRecoveredFT = FPM.recover(cropped)
 
-PLOT = Plot(cropped, recoveredFT, trackRecoveredFT)
+PLOT = Plot(packed, recoveredFT, trackRecoveredFT)
