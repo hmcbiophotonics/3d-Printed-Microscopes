@@ -118,14 +118,16 @@ Returns:
         led_sep   = self.config["led_sep"]
         led_dist  = self.config["led_dist"]
 
-        kx = np.zeros(arraysize**2)
-        ky = np.zeros(arraysize**2)
+        xlocation = np.zeros(arraysize**2)
+        ylocation = np.zeros(arraysize**2)
 
         for i in range(arraysize):
-            kx[i*arraysize:arraysize*(i+1)] = np.arange(-(arraysize-1)/2*led_sep,arraysize/2*led_sep,led_sep)
-            ky[i*arraysize:arraysize*(i+1)] = ((arraysize-1)/2-i)*led_sep
-        kx = -np.sin(np.arctan(kx/led_dist))
-        ky = -np.sin(np.arctan(ky/led_dist))  
+            xlocation[i*arraysize:arraysize*(i+1)] = np.arange(-(arraysize-1)/2*led_sep,arraysize/2*led_sep,led_sep)
+            ylocation[i*arraysize:arraysize*(i+1)] = ((arraysize-1)/2-i)*led_sep
+        #kx = -np.sin(np.arctan(xlocation/led_dist))
+        #ky = -np.sin(np.arctan(ylocation/led_dist))  
+        kx = -xlocation/(np.sqrt(xlocation**2+ylocation**2+led_dist**2))
+        ky = -ylocation/(np.sqrt(xlocation**2+ylocation**2+led_dist**2))
         return kx,ky
 
     def recover(self,seqlowres):
@@ -173,22 +175,33 @@ Returns:
 
         trackRecoveredFT = []
 
-        loop = 3
+        loop = 5
+        pupil = 1
         for tt in range(loop):
             for i3 in range(numim):
                 i2 = int(seq[i3])
                 kxc = self.round_hu((n+1)/2+kx[i2]/dkx)
-                kyc = self.round_hu((m+1)/2+ky[i2]/dky)
-                kxl = self.round_hu((kxc-(n1-1)/2))
-                kxh = self.round_hu((kxc+(n1-1)/2))
+                kyc = self.round_hu((m+1)/2-ky[i2]/dky)
+                kxl = self.round_hu(kxc-(n1-1)/2)
+                kxh = self.round_hu(kxc+(n1-1)/2)
                 kyl = self.round_hu(kyc-(m1-1)/2)
                 kyh = self.round_hu(kyc+(m1-1)/2)
 
-                lowResFT = (m1/m)**2 * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] * CTF
-                lowResIm = np.fft.ifft2(np.fft.ifftshift(lowResFT))
+                #lowResFT = (m1/m)**2 * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] * CTF
+                #lowResIm = np.fft.ifft2(np.fft.ifftshift(lowResFT))
+                #lowResIm = (m/m1)**2 * seqlowres[i2,:,:] * np.exp(1j * np.angle(lowResIm))
+                #lowResFT = np.fft.fftshift(np.fft.fft2(lowResIm)) * CTF
+                #recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = (1-CTF) * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] + lowResFT
+
+                lowResFT_1 = (m1/m)**2 * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] * CTF * pupil
+                lowResIm = np.fft.ifft2(np.fft.ifftshift(lowResFT_1))
                 lowResIm = (m/m1)**2 * seqlowres[i2,:,:] * np.exp(1j * np.angle(lowResIm))
-                lowResFT = np.fft.fftshift(np.fft.fft2(lowResIm)) * CTF
-                recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = (1-CTF) * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] + lowResFT
+                lowResFT_2 = np.fft.fftshift(np.fft.fft2(lowResIm)) * CTF * (1/pupil)
+                recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] + np.conj(pupil) \
+                        / (np.max(np.max(abs(pupil)**2))) * (lowResFT_2 - lowResFT_1)
+                pupil = pupil + np.conj(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1]) \
+                    / (np.max(np.max(abs(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1])**2))) \
+                        * (lowResFT_2 - lowResFT_1)
 
                 if (tt == 0):
                     trackRecoveredFT.append(recoveredObjectFT.copy())

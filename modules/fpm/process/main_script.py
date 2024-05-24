@@ -16,9 +16,8 @@ front_stop_sep     = 1e-3
 magnification      = 1.5049504950495052
 object_dist        = ((1 + magnification) / magnification) * focal_length
 image_dist         = magnification * object_dist
-num_aperture       = np.sin(np.arctan(0.5 * aperture_diameter / (object_dist -
-                                                                 front_stop_sep)))
-num_aperture       = 0.11
+num_aperture       = np.sin(np.arctan(0.5 * aperture_diameter / (object_dist)))
+#num_aperture       = 0.15
 wavelength         = 623e-9
 #sensor_pixel_size  = 1.12e-6 * 2 / magnification
 sensor_pixel_size  = 1.12e-6
@@ -70,4 +69,4 @@ cropped = packed[:,cy-size:cy+size,cx-size:cx+size]
 
 recovered, recoveredFT, trackRecoveredFT = FPM.recover(cropped)
 
-PLOT = Plot(packed, recoveredFT, trackRecoveredFT)
+PLOT = Plot(packed,cropped,recoveredFT, trackRecoveredFT)
