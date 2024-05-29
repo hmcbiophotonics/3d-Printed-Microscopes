@@ -23,10 +23,13 @@ axs[0,0].imshow(packed)
 axs[0,0].set_xticks(np.linspace(0,1500,4))
 axs[0,0].set_yticks(np.linspace(0,1000,5))
 
-x = [170,170]
-y = [132,260]
+# x = [170,170]
+# y = [132,260]
+x = [136,136]
+y = [110,211]
 
-roi = packed[141:867,460:1186]
+# roi = packed[141:867,460:1186]
+roi = packed[345:934,550:1147]
 threshold = 500
 
 axs[0,1].title.set_text("ROI")
