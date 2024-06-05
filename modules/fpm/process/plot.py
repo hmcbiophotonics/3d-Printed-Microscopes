@@ -36,13 +36,6 @@ class Plot():
         self.t2 = self.axs[1,2].imshow(np.log(abs(self.trackRecoveredFT[self.image_idx]))[384:640,384:640])
         self.t3 = self.axs[2,2].imshow(np.angle(self.trackRecovered[self.image_idx]))
 
-
-        #plot recovered
-        #self.axs[0,3].set_title("Final Recovered")
-        #self.axs[0,3].imshow((abs(self.recovered)/np.max(abs(self.recovered))))
-        #self.axs[1,3].imshow(np.log(abs(self.recoveredFT)))
-        #self.axs[2,3].imshow(np.angle(self.recovered))
-
         self.ax_slider = plt.axes([0.1, 0.1, 0.8, 0.03])
         self.slider = Slider(
             self.ax_slider,
@@ -64,7 +57,10 @@ class Plot():
         axs2[0].imshow((abs(self.recovered)/np.max(abs(self.recovered))))
         axs2[1].imshow(np.log(abs(self.recoveredFT)))
         axs2[2].imshow(np.angle(self.recovered))
-
+    
+        plt.figure()
+        plt.title("Final Recovered Amplitude")
+        plt.imshow((abs(self.recovered)/np.max(abs(self.recovered))))
 
         plt.show()
 
