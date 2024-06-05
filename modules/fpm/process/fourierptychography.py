@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 from matplotlib import animation as animation
 from decimal import Decimal, ROUND_HALF_UP
 from argparse import Namespace
+from scipy import integrate
 
 
 DEFAULT_CONFIG = {
@@ -23,7 +24,6 @@ class FourierPtychography():
         Fourier Ptychographic Imaging Algorithm Constructor
 
         Args:
-
         Returns:
             Nothing
         """
@@ -174,6 +174,7 @@ Returns:
         recoveredObjectFT = np.fft.fftshift(np.fft.fft2(recoveredObject))
 
         trackRecoveredFT = []
+        pupils = []
 
         loop = 5
         pupil = 1
@@ -187,24 +188,20 @@ Returns:
                 kyl = self.round_hu(kyc-(m1-1)/2)
                 kyh = self.round_hu(kyc+(m1-1)/2)
 
-                #lowResFT = (m1/m)**2 * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] * CTF
-                #lowResIm = np.fft.ifft2(np.fft.ifftshift(lowResFT))
-                #lowResIm = (m/m1)**2 * seqlowres[i2,:,:] * np.exp(1j * np.angle(lowResIm))
-                #lowResFT = np.fft.fftshift(np.fft.fft2(lowResIm)) * CTF
-                #recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = (1-CTF) * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] + lowResFT
-
                 lowResFT_1 = (m1/m)**2 * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] * CTF * pupil
                 lowResIm = np.fft.ifft2(np.fft.ifftshift(lowResFT_1))
                 lowResIm = (m/m1)**2 * seqlowres[i2,:,:] * np.exp(1j * np.angle(lowResIm))
                 lowResFT_2 = np.fft.fftshift(np.fft.fft2(lowResIm)) * CTF * (1/pupil)
-                recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] + np.conj(pupil) \
-                        / (np.max(np.max(abs(pupil)**2))) * (lowResFT_2 - lowResFT_1)
-                pupil = pupil + np.conj(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1]) \
-                    / (np.max(np.max(abs(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1])**2))) \
+                recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] \
+                    + np.conj(pupil) / (np.max(abs(pupil)**2)) \
                         * (lowResFT_2 - lowResFT_1)
+                pupil = pupil + np.conj(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1]) \
+                    / (np.max(abs(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1])**2)) \
+                    * (lowResFT_2 - lowResFT_1)
 
                 if (tt == 0):
                     trackRecoveredFT.append(recoveredObjectFT.copy())
+                    pupils.append(pupil.copy())
 
         recoveredObject = np.fft.ifft2(np.fft.ifftshift(recoveredObjectFT))
 
