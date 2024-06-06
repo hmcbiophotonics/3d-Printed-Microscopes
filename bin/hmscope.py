@@ -37,6 +37,9 @@ def subcommand_rpi_sync(args):
 def subcommand_rpi_capture(args):
     print("Capturing module")
 
+def subcommand_simulate(args):
+    print('Simulating module')
+
 
 
 def main(argv=None):
@@ -50,12 +53,14 @@ def main(argv=None):
             )
 
     subparsers = parser.add_subparsers(dest = "operation")
-
+    
+    # PROCESS
     parser_process = subparsers.add_parser('process', help = 'processes datasets')
     parser_process.add_argument('module', type=str, help='processing module')
     parser_process.add_argument('dataset', type=str, help='dataset to process')
     parser_process.set_defaults(handler=subcommand_process)
 
+    # RPI
     parser_rpi = subparsers.add_parser('rpi', help = 'remote rpi commands')
     subparsers_rpi = parser_rpi.add_subparsers(dest = 'rpi_operation')
 
@@ -68,6 +73,11 @@ def main(argv=None):
 
     subparser_rpi_connect = subparsers_rpi.add_parser('connect')
     subparser_rpi_connect.set_defaults(handler=subcommand_rpi_connect)
+
+    # SIMULATE
+    parser_simulate = subparsers.add_parser('simulate', help = 'simulate')
+    parser_simulate.add_argument('module', type=str, help='simulating module')
+    parser_simulate.set_defaults(handler=subcommand_simulate)
 
     args = parser.parse_args(argv)
     if args.operation is None:
