@@ -195,6 +195,19 @@ Returns:
                 recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] \
                     + np.conj(pupil) / (np.max(abs(pupil)**2)) \
                         * (lowResFT_2 - lowResFT_1)
+                if (tt == 0 and i3 == 0):
+                    # plt.figure()
+                    # plt.subplot(1,3,1)
+                    # plt.imshow(np.log(np.abs(recoveredObjectFT)))
+                    # plt.subplot(1,3,2)
+                    # plt.imshow(np.log(np.abs(np.conj(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1]) / (np.max(abs(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1])**2)))))
+                    # plt.subplot(1,3,3)
+                    # plt.imshow(np.log(np.abs(lowResFT_2 - lowResFT_1)))
+                    x = np.conj(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1]) / (np.max(abs(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1])**2)) * (lowResFT_2 - lowResFT_1)
+                    print(x[0,0], x[128,128])
+                    x = x + 1
+                    print(x[0,0], x[128,128])
+
                 pupil = pupil + np.conj(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1]) \
                     / (np.max(abs(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1])**2)) \
                     * (lowResFT_2 - lowResFT_1)
