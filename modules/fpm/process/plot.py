@@ -49,7 +49,7 @@ class Plot():
         self.axs[0,0].add_patch(roi_rect)
         self.axs[0,0].text(842-128,551-128,'ROI',color='red')
 
-        scalebar = ScaleBar(1.12e-6*2,color='red',frameon=False)
+        scalebar = ScaleBar(1.12e-6*2,color='red',frameon=False,location='lower right')
         self.axs[0,0].add_artist(scalebar)
 
         self.axs[0,1].set_title("ROI")
@@ -57,7 +57,7 @@ class Plot():
         self.u2 = self.axs[1,1].imshow(np.log(abs(np.fft.fftshift(np.fft.fft2(self.cropped[self.seq[self.image_idx]])))))
         self.axs[2,1].remove()
 
-        scalebar = ScaleBar(1.12e-6*2,color='red',frameon=False)
+        scalebar = ScaleBar(1.12e-6*2,color='red',frameon=False,location='lower right')
         self.axs[0,1].add_artist(scalebar)
 
         self.axs[0,2].set_title("Recovered Progression")
@@ -65,7 +65,7 @@ class Plot():
         self.t2 = self.axs[1,2].imshow(np.log(abs(self.trackRecoveredFT[self.image_idx])))
         self.t3 = self.axs[2,2].imshow(np.angle(self.trackRecovered[self.image_idx]))
 
-        scalebar = ScaleBar(1.12e-6/4*2,color='red',frameon=False)
+        scalebar = ScaleBar(1.12e-6/4*2,color='red',frameon=False,location='lower right')
         self.axs[0,2].add_artist(scalebar)
 
 
@@ -83,8 +83,10 @@ class Plot():
 
         self.anim = FuncAnimation(self.fig, self.animate, frames=len(self.vector), interval=200, repeat=True)
 
+        self.anim.save('figure1.gif',writer='pillow',dpi=300)
+
         plt.figure()
-        plt.title("ROI With Center LED On")
+        plt.title("Cropped Region of Interest With Center LED On")
         plt.imshow(self.cropped[self.seq[0]])
         ax = plt.gca()
         ax.set_xticks([])
@@ -92,7 +94,8 @@ class Plot():
         scalebar = ScaleBar(1.12e-6*2,
                             color='red',
                             frameon=False,
-                            font_properties={'size':16}
+                            font_properties={'size':16},
+                            location='lower right'
                             )
         ax.add_artist(scalebar)
         plt.savefig('figure2.png')
@@ -112,12 +115,11 @@ class Plot():
         scalebar = ScaleBar(1.12e-6*2/4,
                             color='red',
                             frameon=False,
-                            font_properties={'size':16}
+                            font_properties={'size':16},
+                            location='lower right'
                             )
         ax.add_artist(scalebar)
         plt.savefig('figure3.png')
-
-        plt.show()
 
     def update(self,val):
         self.image_idx = int(self.slider.val)
