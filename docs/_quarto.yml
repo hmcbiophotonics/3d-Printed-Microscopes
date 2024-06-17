@@ -1,0 +1,31 @@
+project:
+  type: website
+  preview:
+    port: 4400
+
+website:
+  title: "3d-Printed Microsopes"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - text: Labs
+        menu:
+        - text: Labs Overview
+          href: labs/
+        - text: Lab 1
+          href: labs/lab1/
+        - text: Lab 2
+          href: labs/lab2/
+        - text: Lab 3
+          href: labs/lab3/
+      - text: Lecture
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+
+
