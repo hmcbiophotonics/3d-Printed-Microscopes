@@ -1,0 +1,275 @@
+
+# Introduction to Ray Tracing
+
+Lab 2
+
+E190BD: Introduction to Optical Engineering
+
+Spring 2022
+
+
+## Learning Objectives
+
+By the end of this lab you will have…
+
+
+
+* Set up and understand how to configure optical ray tracing simulations using the Python package RayTracing.
+* Perform ray tracing simulations of simple imaging systems and analyze their performance
+
+
+## Setup
+
+
+### Download and Install the RayTracing Package
+
+[https://github.com/DCC-Lab/RayTracing](https://github.com/DCC-Lab/RayTracing) 
+
+[https://raytracing.readthedocs.io/](https://raytracing.readthedocs.io/) 
+
+The first step in this lab is to set up the RayTracing Python package. You may do this using either Spyder on your personal machine or by using a Jupyter notebook either locally or in Google Colaboratory (Colab). In this lab we will use an Jupyter notebook hosted on Google Colab.
+
+To start, open the Colab notebook [here](https://colab.research.google.com/drive/1YXu5yvqwgt3mAV18tkrWFFL0ofYJd4KG) and save a copy to your Google Drive. The Jupyter Notebook walks you through the steps necessary to set up and use the RayTracing package to perform a simple simulation. Follow the steps to try it out for yourself and get familiar with the basic interface. You may also find the catalog of examples listed [here](https://raytracing.readthedocs.io/en/master/examples.html#examples) (accompanying code for easy copy-paste in the GitHub repository [here](https://github.com/DCC-Lab/RayTracing/tree/master/raytracing/examples))
+
+
+## Analysis of Finite and Infinite Conjugate Optical Systems
+
+
+#### Ray Tracing of a Finite Conjugate Optical System
+
+In this section you will perform a simulation of a finite conjugate microscope. This system is composed of two lenses: the microscope objective and the tube lens. The objective forms an intermediate image which is then used by the tube lens to form the final image. This system is called finite conjugate because the intermediate image plane is at a finite distance. This is in contrast to the infinite conjugate system which you will learn more about in the next section.
+
+Set up a new simulation using two lenses with focal lengths of 10 cm (objective lens) and 40 cm (tube lens). Place the object 20 cm in front of the first lens (the objective lens) and separate the lenses by a distance of 70 cm. You may assume that the diameter of the lenses is infinite for this example.
+
+
+#### Paper Calculation
+
+First, use basic ray tracing diagrams and calculations to predict the behavior of this system and answer the questions below.
+
+
+
+1. For the first lens (objective lens) and intermediate image
+    1. Where is the image located? 
+    2. Is it real or virtual?
+    3. Upright or inverted?
+    4. What is its magnification?
+2. For the second lens (tube lens) and final image
+    5. Where is the final image of the imaging system located?
+    6. Is it real or virtual?
+    7. Upright or inverted?
+    8. What is its magnification (with respect to the initial object)?
+3. Are the rays between the two lenses converging, diverging, or traveling parallel?
+
+
+#### Computer Simulation
+
+Next you will simulate the system to confirm your calculations. We will follow steps similar to the tutorial in the Colab notebook.
+
+
+
+1. Create variables to store the important properties of the system.
+    1. “obj_h” to store the value of the object.
+    2. “f1” and “f2” for the focal lengths of the objects
+    3. “lens_separation” for the distance between the two lenses
+    4. “diameter” for the diameter of the lenses
+2. Use the ObjectRays() function to create the rays object with a diameter equal to the value specified in “obj_h”. You may choose any parameters that you would like for the half angle (halfAngle), number of rays bundles (H) and the number of rays per bundle (T). A good starting point is around halfAngle = 0.05 rad, H=2, T=5.
+3. Create an ImagingPath object and add the lenses to the path.
+4. Display the imaging path.
+
+Do the results of your ray tracing simulation match your expectations? Why or why not? Upload a screenshot of your ray tracing simulation.
+
+
+#### Ray Tracing Analysis of an Infinite Conjugate System
+
+In this section we will analyze an infinite conjugate system. An infinite conjugate system is the most common configuration for microscopes for reasons that we will see shortly. It is a subset of a type of optical system called a 4-f system. The 4-f system is a canonical optical system composed of two lenses separated by the sum of their focal lengths. In this section, you will simulate a 4-f system and investigate how different parameters in it affect its performance.
+
+Give the first lens a focal length of 10 cm and the second with a focal length of 40 cm. Separate the two lenses by a distance given by the sum of their focal lengths (50 cm) and place an aperture at the back focal plane of the first lens in your system (this will also by definition be at the front focal plane of your second lens). Place your object at the front focal plane of the first lens.
+
+
+#### Paper Calculation
+
+First, use basic ray tracing diagrams and calculations to predict the behavior of this system and answer the questions below.
+
+
+
+4. For the first lens (objective lens) and intermediate image
+    9. Where is the image located?
+    10. Is it real or virtual?
+    11. Upright or inverted?
+    12. What is its magnification?
+5. For the second lens (tube lens) and final image
+    13. Where is the final image of the imaging system located?
+    14. Is it real or virtual?
+    15. Upright or inverted?
+    16. What is its magnification (with respect to the initial object)?
+6. Are the rays between the two lenses converging, diverging, or traveling parallel?
+
+
+#### Computer Simulation
+
+Set up a new simulation with two lenses as in the section before. Launch a set of rays through the optical system to answer the following questions again for the infinite conjugate system:
+
+
+
+1. For the first lens (objective lens) and intermediate image
+    1. Where is the image located?
+    2. Is it real or virtual?
+    3. Upright or inverted?
+    4. What is its magnification?
+2. For the second lens (tube lens) and final image
+    5. Where is the final image of the imaging system located?
+    6. Is it real or virtual?
+    7. Upright or inverted?
+    8. What is its magnification (with respect to the initial object)?
+3. Are the rays between the two lenses converging, diverging, or traveling parallel?
+
+
+#### Aperture
+
+How does the aperture at the back focal plane impact what rays can pass through the optical system? (Hint: create a large cone of rays and then see how changing its size impacts the bundle of rays)
+
+Do the results of your ray tracing simulation match your expectations? Why or why not? Upload a screenshot of your ray tracing simulation.
+
+
+#### The advantage of infinite conjugate systems
+
+In this section we will investigate the advantages of an infinite conjugate optical system compared to a finite conjugate one. Keep the objects and distances between the lenses at the same distances as you set in the respective sections above. 
+
+We will compare the two systems by investigating what happens when we place a slab of glass into the optical path. Add a 5 cm thick slab of glass (n=1.5) in the space between the two lenses in both systems (making sure that you reduce the amount of space on either side to keep the lens separation the same). You can do this using the DielectricSlab object. Run the simulations again and comment on your observations for each system using the questions below
+
+
+
+1. Does the location of the image change?
+2. Does the magnification of the system change?
+3. How does the image location and magnification change as the thickness of the glass slab increases?
+
+Based on this analysis, why do you think that infinite conjugate systems are the preferred architecture in modern microscopes? (Hint: consider that it is often advantageous to put filters in the microscope system to, for example, block certain wavelength ranges.)
+
+
+## Raspberry Pi Camera Module
+
+
+### Raspberry Pi Camera Module Specs
+
+Explore the datasheet and specifications for the Raspberry Pi v2 camera [here](https://www.raspberrypi.com/documentation/accessories/camera.html#hardware-specification) and fill in the table below.
+
+
+<table>
+  <tr>
+   <td><strong>Specification</strong>
+   </td>
+   <td><strong>Value</strong>
+   </td>
+   <td><strong>Units</strong>
+   </td>
+   <td><strong>Notes</strong>
+   </td>
+  </tr>
+  <tr>
+   <td>Lens focal length
+   </td>
+   <td>
+   </td>
+   <td>
+   </td>
+   <td>
+   </td>
+  </tr>
+  <tr>
+   <td>Lens f-number
+   </td>
+   <td>
+   </td>
+   <td>
+   </td>
+   <td>
+   </td>
+  </tr>
+  <tr>
+   <td>Sensor pixel size (w x h)
+   </td>
+   <td>
+   </td>
+   <td>
+   </td>
+   <td>
+   </td>
+  </tr>
+  <tr>
+   <td>Sensor size (w x h) in physical units
+   </td>
+   <td>
+   </td>
+   <td>
+   </td>
+   <td>
+   </td>
+  </tr>
+  <tr>
+   <td>Pixel count (total number of pixels)
+   </td>
+   <td>
+   </td>
+   <td>
+   </td>
+   <td>
+   </td>
+  </tr>
+</table>
+
+
+
+### Ray Tracing Simulation of the 3d-printed Raspberry Pi Microscope
+
+For this section, you will perform a ray tracing simulation of the 3d-printed microscope architecture we will use in later labs. You may find a copy of the paper describing the system [here](https://doi.org/10.1038/s41598-019-43845-9).
+
+This microscope is designed by removing the lens of the Raspberry Pi camera and displacing it from the sensor to create a microscope with a working distance of ~7 mm. Using the parameters of the camera and lens that you found from the datasheet and completed in the table above, set up a simulation to analyze this microscope configuration. Photos of the lens with a scale bar are provided below for your reference. 
+
+
+
+<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
+
+
+![alt_text](images/image1.png "image_tooltip")
+
+
+
+#### Camera Lens Questions
+
+
+
+1. Estimate the diameter of the lens from the photos.
+2. Does this lens have a front or rear stop?
+3. Estimate the size of the stop from the photos. Then using the parameters from the lens data sheet that you collected in the table above, calculate the diameter of the stop. Do these values match?
+
+
+#### Simulation
+
+Set up a ray tracing simulation of the Raspberry Pi microscope using this single lens as a simple single-lens imaging system. Include any stops as appropriate. For example, you should consider the stop on the lens assembly and the finite size of the camera sensor. You may place the stop on the lens assembly at a distance of 1 mm from the lens. Then, use your simulation to answer the following questions.
+
+
+
+1. Write an expression to calculate the lateral magnification of the optical system. (Hint: make sure you set the objectHeight property of the ImagingPath object and check out the imageSize function with the useObject parameter set to True.)
+2. How far in front of the lens should the object be located in order to achieve a lateral magnification of 1.5x?
+3. At this magnification of 1.5x, what is the image distance (i.e., how far behind the sensor is the image located)?
+4. What is the maximum object size that you can image? Note that the field of view is normally defined as the diameter of the object where half the cone of rays from the edge of the object passes through the optical system.
+5. What is the maximum angle that a ray emitted from the center of the object can have with respect to the optical axis such that it still passes through the optical system? This quantity is called the half-angle of the acceptance cone and is used in calculating the [numerical aperture](https://en.wikipedia.org/wiki/Numerical_aperture) (NA) of the optical system using the expression. The NA is an important parameter for determining the resolution of the optical system. What is the NA of this optical system?
+6. How would you change the optical system to achieve a magnification of 2x?
+
+Save a copy of your simulation figure to submit.
+
+
+## What to Turn In
+
+See Gradescope for the online assignment where you will submit the answers to the questions listed in this lab writeup along with the source code (Python script or Jupyter Notebook file) used to generate the results.
+
+
+## Resources
+
+Documentation
+
+
+
+* [RayTracing](https://raytracing.readthedocs.io/en/master/) 
+* [Picamera](https://picamera.readthedocs.io/) 
+* [Raspberry Pi Documentation - Camera](https://www.raspberrypi.com/documentation/accessories/camera.html)
