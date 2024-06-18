@@ -16,7 +16,7 @@ module CameraMount() {
     height=14.5-2.8;
     wall_thick=4;
     lens_height=4;
-    dh=1; //+1mm for si (distance between lens & sensor)
+    dh=0; //+1mm for si (distance between lens & sensor)
 
     //Lens is pushed by 1mm from the bottom + its height is 4z.5mm + 6mm distance to the detector lens + the lens sits 6.5mm away from the support. Hence the support should be built 18mm from the bottom
     cam_holder = 18;
@@ -37,7 +37,8 @@ module CameraMount() {
         
         // Lens is pushed up by 1mm from the bottom + its height of 3mm gives 4mm from the bottom of the holder to the top aperture plastic
         translate([-2.5,0,-height/2+lens_height/2+1]){        
-            cylinder(d=6, h=lens_height,center=true);}
+            cylinder(d=6+0.01, h=lens_height,center=true);}
+                // add 0.01 here for tolerance
         
         translate([-2.5,0,-height/2+lens_height/2-1]){        
             cylinder(d=4, h=lens_height,center=true);}
@@ -102,7 +103,7 @@ module CameraMount() {
                 
             //Screw
             translate([6,0,5]){
-                cylinder(d=3.5,h=30,center=true);}
+                cylinder(d=3.5,h=15,center=true);}
             //Screw END 
       
         // Spring Holes
