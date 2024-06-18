@@ -16,6 +16,7 @@ module CameraMount() {
     height=14.5-2.8;
     wall_thick=4;
     lens_height=4;
+    dh=1; //+1mm for si (distance between lens & sensor)
 
     //Lens is pushed by 1mm from the bottom + its height is 4z.5mm + 6mm distance to the detector lens + the lens sits 6.5mm away from the support. Hence the support should be built 18mm from the bottom
     cam_holder = 18;
@@ -26,9 +27,9 @@ module CameraMount() {
             
         // Crop the top
         translate([0,0,height/2]){
-            cube([camera_w_x+1+wall_thick,camera_w_y+1+wall_thick,3],center=true);}
+            cube([camera_w_x+1+wall_thick,camera_w_y+1+wall_thick,3-dh*2],center=true);}
         translate([-10,0,height/2]){
-            cube([camera_w_x+10+wall_thick,21.5,4],center=true);}
+            cube([camera_w_x+10+wall_thick,21.5,4-dh*2],center=true);}
             
         // Hole inside
         translate([0,0,lens_height]){    
@@ -44,7 +45,7 @@ module CameraMount() {
         // Camera Holder. The sensor chip sits heigth - 4mm (lens top) - 2mm crop from the top of the lens = 8mm. But we also crop 1mm from the bottom of the sensor giving uz 7mm separation from the top lens plastic  to the sensor. Since we need 7.5mm the esensor height = 7.5mm + 2mm + 4mm = 13.5mm
             
         translate([0,0,height/2]){        
-            cube([camera_w_x,camera_w_y,4],center=true);}
+            cube([camera_w_x,camera_w_y,4-dh*2],center=true);}
             
                    
         // Camera screw holes
