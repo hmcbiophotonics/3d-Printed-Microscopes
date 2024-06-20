@@ -22,18 +22,21 @@ axs[0,0].title.set_text("Full FOV Image (RED Only)")
 axs[0,0].imshow(packed)
 axs[0,0].set_xticks(np.linspace(0,1500,4))
 axs[0,0].set_yticks(np.linspace(0,1000,5))
+plt.show(block=False)
 
-# These values are for a different dataset
-# x = [136,136]
-# y = [110,211]
+print("Enter coordinates for ROI:")
+ROI_x0 = int(input("Upper left x coordinate: "))
+ROI_y0 = int(input("Upper left y coordinate: "))
+ROI_x1 = int(input("Lower right x coordinate: "))
+ROI_y1 = int(input("Lower right y coordinate: "))
 
 x = [170,170]
 y = [132,260]
 
 # Same here
 # roi = packed[345:934,550:1147]
-roi = packed[141:867,460:1186]
-threshold = 700
+roi = packed[ROI_y0:ROI_y1,ROI_x0:ROI_x1]
+threshold = 400
 
 axs[0,1].title.set_text("ROI")
 axs[0,1].plot(x,y,color="red",linewidth=2)
@@ -56,6 +59,7 @@ axs[1,1].title.set_text("Threshold Line Plot")
 axs[1,1].plot(filt)
 axs[1,1].set_xlabel('Pixel Number')
 axs[1,1].set_ylabel('Normalized Pixel Intensity [a.u.]')
+plt.draw()
 
 
 # Now let's actually calculate the magnification
