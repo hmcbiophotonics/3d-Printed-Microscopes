@@ -37,8 +37,8 @@ module CameraMount() {
         
         // Lens is pushed up by 1mm from the bottom + its height of 3mm gives 4mm from the bottom of the holder to the top aperture plastic
         translate([-2.5,0,-height/2+lens_height/2+1]){        
-            cylinder(d=6+0.01, h=lens_height,center=true);}
-                // add 0.01 here for tolerance
+            cylinder(d=6+0.15, h=lens_height,center=true);}
+                // add 0.015 here for tolerance
         
         translate([-2.5,0,-height/2+lens_height/2-1]){        
             cylinder(d=4, h=lens_height,center=true);}
@@ -49,15 +49,16 @@ module CameraMount() {
             cube([camera_w_x,camera_w_y,4-dh*2],center=true);}
             
                    
+        screw_d = 1.5+0.15;
         // Camera screw holes
          translate([-24/2+9.5,21/2,height/2-2]){
-             cylinder(d=1.5,h=10,center=true);}     
+             cylinder(d=screw_d,h=10,center=true);}     
          translate([-24/2+9.5,-21/2,height/2-2]){
-             cylinder(d=1.5,h=10,center=true);}
+             cylinder(d=screw_d,h=10,center=true);}
           translate([-24/2+22,21/2,height/2-2]){
-             cylinder(d=1.5,h=10,center=true);}
+             cylinder(d=screw_d,h=10,center=true);}
           translate([-24/2+22,-21/2,height/2-2]){
-             cylinder(d=1.5,h=10,center=true);}// Camera screw holes END   
+             cylinder(d=screw_d,h=10,center=true);}// Camera screw holes END   
              
     }
 

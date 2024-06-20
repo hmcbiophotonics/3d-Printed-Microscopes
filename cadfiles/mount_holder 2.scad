@@ -71,7 +71,11 @@ module MountHolder() {
       
       //Bushing
       translate([6,0,14.5]){
-          cylinder(d=5,h=200,center=true);}
+          cylinder(d=5+0.3,h=200,center=true);}
+            // 0.3 added here for bushing tolerance
+      translate([6,0,14.5]){
+          cylinder(d=6,h=6,center=true);}
+
       //Bushing END
       
       // Spring Holes
