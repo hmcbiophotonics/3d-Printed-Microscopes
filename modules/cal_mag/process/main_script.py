@@ -45,10 +45,14 @@ packed = np.zeros((int(m/2),int(n/2)))
 packed = sample[1::2,1::2]
 
 fig,axs = plt.subplots(2,2)
+
+scalebar = ScaleBar(spsize*2,color='red',frameon=False,location='lower right')
+
 axs[0,0].title.set_text("Full FOV Image (RED Only)")
 axs[0,0].imshow(packed)
 axs[0,0].set_xticks(np.linspace(0,1500,4))
 axs[0,0].set_yticks(np.linspace(0,1000,5))
+axs[0,0].add_artist(scalebar)
 plt.ion()
 plt.show()
 
@@ -104,10 +108,13 @@ except FileNotFoundError:
 roi = packed[roi_coords['y0']:roi_coords['y1'],
              roi_coords['x0']:roi_coords['x1']]
 
+scalebar = ScaleBar(spsize*2,color='red',frameon=False,location='lower right')
+
 axs[0,1].title.set_text("ROI")
 axs[0,1].imshow(roi)
 axs[0,1].set_xticks([])
 axs[0,1].set_yticks([])
+axs[0,1].add_artist(scalebar)
 
 plt.show()
 
@@ -197,6 +204,8 @@ print(f"Actual bar width: {actual_bar_width}")
 print(f"Captured_bar_width: {captured_bar_width}")
 print(f'Magnification: {magnification}')
 
+scalebar = ScaleBar(spsize*2,color='red',frameon=False,location='lower right')
+
 plt.figure()
 plt.imshow(roi)
 plt.title("ROI")
@@ -204,5 +213,6 @@ plt.set_cmap('gray')
 ax = plt.gca()
 ax.set_xticks([])
 ax.set_yticks([])
+ax.add_artist(scalebar)
 
 plt.show()
