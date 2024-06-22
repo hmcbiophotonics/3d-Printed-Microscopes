@@ -2,13 +2,40 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib_scalebar.scalebar import ScaleBar
 import sys
+import os
+import json
+
+
+def inputData(type):
+    data = {}
+    print(f"Enter coordinates for {type}")
+    print("=====================")
+    if type == "roi":
+        x0 = int(input("Upper left x coordinate: "))
+        y0 = int(input("Upper left y coordinate: "))
+        x1 = int(input("Lower right x coordinate: "))
+        y1 = int(input("Lower right y coordinate: "))
+        data = {
+            'x0': x0, 'y0': y0,
+            'x1': x1, 'y1': y1
+        }
+    elif type == "vbar":
+        x = int(input("x coordinate: "))
+        y0 = int(input("Upper y coordinate: "))
+        y1 = int(input("Lower y coordinate: "))
+        data = {
+            'x': x,
+            'y0': y0, 'y1': y1
+        }
+    return data
 
 ### START PROGRAM ###
 if (len(sys.argv) == 1):
     print(f"USAGE: {sys.argv[0]} <dataset.npy>")
     exit()
 
-sample = np.load(sys.argv[1])
+file_path = sys.argv[1]
+sample = np.load(file_path)
 
 spsize = 1.12e-6
 
@@ -22,29 +49,98 @@ axs[0,0].title.set_text("Full FOV Image (RED Only)")
 axs[0,0].imshow(packed)
 axs[0,0].set_xticks(np.linspace(0,1500,4))
 axs[0,0].set_yticks(np.linspace(0,1000,5))
-plt.show(block=False)
+plt.ion()
+plt.show()
 
-print("Enter coordinates for ROI:")
-ROI_x0 = int(input("Upper left x coordinate: "))
-ROI_y0 = int(input("Upper left y coordinate: "))
-ROI_x1 = int(input("Lower right x coordinate: "))
-ROI_y1 = int(input("Lower right y coordinate: "))
+print("Looking for associated metadata for ROI coordinates...")
+dataset_dir, dataset_name = os.path.split(file_path)
+metadata_path = os.path.join(dataset_dir,'metadata.json')
 
-x = [170,170]
-y = [132,260]
+# if path exists just read from the file
+# if path exists but doesnt have what we need append
+# if path doesnt exist create a new file and append
 
-# Same here
-# roi = packed[345:934,550:1147]
-roi = packed[ROI_y0:ROI_y1,ROI_x0:ROI_x1]
-threshold = 400
+roi_coords = { }
+metadata_file = None
+
+try:
+    metadata_file = open(metadata_path, 'r+')
+    print("metadata successfully opened")
+    metadata = json.load(metadata_file)
+    if dataset_name in metadata.keys():
+        print(f"{dataset_name} found")
+        while True:
+            update_roi = input("Would you like to update the region of interest (Y/N)?: ")
+            if update_roi.upper() == "Y":
+                roi_coords = inputData('roi')
+                metadata[dataset_name]['roi'] = roi_coords
+                metadata_file.seek(0)
+                json.dump(metadata,metadata_file,indent=4)
+                break
+            elif update_roi.upper() == "N":
+                roi_coords = metadata[dataset_name]['roi']
+                break
+            continue
+    else:
+        print(f"{dataset_name} not found")
+        roi_coords = inputData('roi')
+        metadata[dataset_name] = {
+            "roi": roi_coords
+        }
+        metadata_file.seek(0)
+        json.dump(metadata,metadata_file,indent=4)
+except FileNotFoundError:
+    print("metadata file dne, creating a new one...")
+    metadata_file = open(metadata_path, 'w')
+    roi_coords = inputData('roi')
+    metadata = {
+        dataset_name: {
+            "roi": roi_coords
+        }
+    }
+    json.dump(metadata,metadata_file,indent=4)
+
+# Plot the ROI
+roi = packed[roi_coords['y0']:roi_coords['y1'],
+             roi_coords['x0']:roi_coords['x1']]
 
 axs[0,1].title.set_text("ROI")
-axs[0,1].plot(x,y,color="red",linewidth=2)
 axs[0,1].imshow(roi)
 axs[0,1].set_xticks([])
 axs[0,1].set_yticks([])
 
-v_line = roi[y[0]:y[1],x[0]]
+plt.show()
+
+# Input threshold coords
+if 'vbar' in metadata[dataset_name].keys():
+    while True:
+        update_vbar = input("Would you like to update the vertical bar (Y/N)?: ")
+        if update_vbar.upper() == "Y":
+            vbar_coords = inputData('vbar')
+            metadata[dataset_name]['vbar'] = vbar_coords
+            metadata_file.seek(0)
+            json.dump(metadata,metadata_file,indent=4)
+            break
+        elif update_vbar.upper() == "N":
+            vbar_coords = metadata[dataset_name]['vbar']
+            break
+        continue
+else:
+    vbar_coords = inputData('vbar')
+    metadata[dataset_name]['vbar'] = vbar_coords
+    metadata_file.seek(0)
+    json.dump(metadata,metadata_file,indent=4)
+metadata_file.close()
+
+threshold = 400
+
+# Threshold Line Coords
+
+axs[0,1].plot([vbar_coords['x'],vbar_coords['x']],
+              [vbar_coords['y0'],vbar_coords['y1']],
+              color="red",linewidth=2)
+
+v_line = roi[vbar_coords['y0']:vbar_coords['y1'],vbar_coords['x']]
 
 axs[1,0].axhline(y=threshold,color="red",linewidth=2)
 axs[1,0].plot(v_line)
@@ -59,11 +155,10 @@ axs[1,1].title.set_text("Threshold Line Plot")
 axs[1,1].plot(filt)
 axs[1,1].set_xlabel('Pixel Number')
 axs[1,1].set_ylabel('Normalized Pixel Intensity [a.u.]')
-plt.draw()
+plt.ioff()
 
 
 # Now let's actually calculate the magnification
-
 # Let's first compute the "width of each bar"
 
 widths = []
