@@ -35,7 +35,14 @@ class FourierPtychography():
     def create_configuration(self, config={}):
         self.config = config
         return config
+    
+    @staticmethod
+    def ft2(m):
+        return np.fft.fftshift(np.fft.fft2(m))
 
+    @staticmethod
+    def ift2(m):
+        return np.fft.ifft2(np.fft.ifftshift(m))
 
     @staticmethod
     def round_hu(number):
@@ -171,7 +178,7 @@ Returns:
         seq = self.make_spiral_seq(3,3,self.config["arraysize"])
 
         recoveredObject = np.ones((m,n))
-        recoveredObjectFT = np.fft.fftshift(np.fft.fft2(recoveredObject))
+        recoveredObjectFT = self.ft2(recoveredObject)
 
         trackRecoveredFT = []
         pupils = []
@@ -189,9 +196,9 @@ Returns:
                 kyh = self.round_hu(kyc+(m1-1)/2)
 
                 lowResFT_1 = (m1/m)**2 * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] * CTF * pupil
-                lowResIm = np.fft.ifft2(np.fft.ifftshift(lowResFT_1))
+                lowResIm = self.ift2(lowResFT_1)
                 lowResIm = (m/m1)**2 * seqlowres[i2,:,:] * np.exp(1j * np.angle(lowResIm))
-                lowResFT_2 = np.fft.fftshift(np.fft.fft2(lowResIm)) * CTF * (1/pupil)
+                lowResFT_2 = self.ft2(lowResIm) * CTF * (1/pupil)
                 recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] \
                     + np.conj(pupil) / (np.max(abs(pupil)**2)) \
                         * (lowResFT_2 - lowResFT_1)
@@ -216,6 +223,6 @@ Returns:
                     trackRecoveredFT.append(recoveredObjectFT.copy())
                     pupils.append(pupil.copy())
 
-        recoveredObject = np.fft.ifft2(np.fft.ifftshift(recoveredObjectFT))
+        recoveredObject = self.ift2(recoveredObjectFT)
 
         return recoveredObject, recoveredObjectFT, trackRecoveredFT
