@@ -87,6 +87,8 @@ end
 
 objectRecover = ifft2(ifftshift(objectRecoverFT));
 figure();
+imshow(log(abs(objectRecoverFT)),[])
+figure();
 imshow(abs(objectRecover),[])
 figure();
 imshow(abs(pupil),[])
