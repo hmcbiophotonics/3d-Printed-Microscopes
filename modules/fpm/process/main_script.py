@@ -100,7 +100,6 @@ for i in range(len(axs)):
     add_colorbar(ims[i],axs[i])
     axs[i].set_xticks([])
     axs[i].set_yticks([])
-plt.savefig(f'{loop}_loop.png')
 plt.show()
 
 
