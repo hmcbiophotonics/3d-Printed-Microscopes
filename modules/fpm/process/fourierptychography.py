@@ -45,7 +45,7 @@ class FourierPtychography():
         return np.fft.ifft2(np.fft.ifftshift(m))
 
     @staticmethod
-    def round_hu(number):
+    def round(number):
         """
         A better round function
 
@@ -137,7 +137,7 @@ Returns:
         ky = -ylocation/(np.sqrt(xlocation**2+ylocation**2+led_dist**2))
         return kx,ky
 
-    def recover(self,seqlowres):
+    def recover(self,seqlowres,loop,pupil):
         """
         Recover the hi-res image
         
@@ -181,48 +181,30 @@ Returns:
         recoveredObjectFT = self.ft2(recoveredObject)
 
         trackRecoveredFT = []
-        pupils = []
 
-        loop = 5
-        pupil = 1
         for tt in range(loop):
             for i3 in range(numim):
                 i2 = int(seq[i3])
-                kxc = self.round_hu((n+1)/2+kx[i2]/dkx)
-                kyc = self.round_hu((m+1)/2-ky[i2]/dky)
-                kxl = self.round_hu(kxc-(n1-1)/2)
-                kxh = self.round_hu(kxc+(n1-1)/2)
-                kyl = self.round_hu(kyc-(m1-1)/2)
-                kyh = self.round_hu(kyc+(m1-1)/2)
 
-                lowResFT_1 = (m1/m)**2 * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] * CTF * pupil
+                kxc = self.round((n+1)/2+kx[i2]/dkx)
+                kyc = self.round((m+1)/2-ky[i2]/dky)
+                kxl = self.round(kxc-(n1-1)/2); kxh = self.round(kxc+(n1-1)/2)
+                kyl = self.round(kyc-(m1-1)/2); kyh = self.round(kyc+(m1-1)/2)
+                lowResFT_1 = (m1/m)**2 * recoveredObjectFT[kyl-1:kyh,kxl-1:kxh] * CTF * pupil
                 lowResIm = self.ift2(lowResFT_1)
                 lowResIm = (m/m1)**2 * seqlowres[i2,:,:] * np.exp(1j * np.angle(lowResIm))
                 lowResFT_2 = self.ft2(lowResIm) * CTF * (1/pupil)
-                recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] \
-                    + np.conj(pupil) / (np.max(abs(pupil)**2)) \
-                        * (lowResFT_2 - lowResFT_1)
-                if (tt == 0 and i3 == 0):
-                    # plt.figure()
-                    # plt.subplot(1,3,1)
-                    # plt.imshow(np.log(np.abs(recoveredObjectFT)))
-                    # plt.subplot(1,3,2)
-                    # plt.imshow(np.log(np.abs(np.conj(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1]) / (np.max(abs(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1])**2)))))
-                    # plt.subplot(1,3,3)
-                    # plt.imshow(np.log(np.abs(lowResFT_2 - lowResFT_1)))
-                    x = np.conj(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1]) / (np.max(abs(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1])**2)) * (lowResFT_2 - lowResFT_1)
-                    print(x[0,0], x[128,128])
-                    x = x + 1
-                    print(x[0,0], x[128,128])
 
-                pupil = pupil + np.conj(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1]) \
-                    / (np.max(abs(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1])**2)) \
+                recoveredObjectFT[kyl-1:kyh,kxl-1:kxh] = recoveredObjectFT[kyl-1:kyh,kxl-1:kxh] \
+                    + np.conj(pupil) / (np.max(np.abs(pupil)**2)) \
                     * (lowResFT_2 - lowResFT_1)
 
-                if (tt == 0):
-                    trackRecoveredFT.append(recoveredObjectFT.copy())
-                    pupils.append(pupil.copy())
+                pupil = pupil + np.conj(recoveredObjectFT[kyl-1:kyh,kxl-1:kxh]) \
+                    / (np.max(np.abs(recoveredObjectFT[kyl-1:kyh,kxl-1:kxh])**2)) \
+                    * (lowResFT_2 - lowResFT_1)
+
+                trackRecoveredFT.append(recoveredObjectFT.copy())
 
         recoveredObject = self.ift2(recoveredObjectFT)
 
-        return recoveredObject, recoveredObjectFT, trackRecoveredFT
+        return recoveredObject, recoveredObjectFT, trackRecoveredFT, pupil
