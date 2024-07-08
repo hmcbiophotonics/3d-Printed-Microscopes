@@ -1,5 +1,8 @@
 ---
 title: Introduction to the Raspberry Pi and Raspberry Pi Camera Module
+format:
+  html:
+    number-sections: true
 ---
 
 ## Learning Objectives
@@ -16,11 +19,11 @@ Remember to track the time you spend on this assignment, as you will be asked to
 
 ## Instructions
 
-The first step is to get your Raspberry Pi set up. The labs for this course will use the [Raspberry Pi Zero 2 W](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/) and a [Raspberry Pi Camera Module](https://www.raspberrypi.com/products/pi-noir-camera-v2/) (specifically the NoIR version which has the IR shortpass filter removed to enable capturing light from a wider range of optical wavelengths.) The Raspberry Pi will be used as an external peripheral and controlled over the command line with ssh and through VNC if you prefer to use a graphical user interface (GUI). Don’t fear if you don’t have experience with the command line, this lab will provide you with a basic tutorial so that you can get up and running.
+The first step is to get your Raspberry Pi set up. These labs will use the [Raspberry Pi Zero 2 W](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/) and a [Raspberry Pi Camera Module](https://www.raspberrypi.com/products/pi-noir-camera-v2/) (specifically the NoIR version which has the IR shortpass filter removed to enable capturing light from a wider range of optical wavelengths.) The Raspberry Pi will be used as an external peripheral and controlled over the command line with ssh and through VNC if you prefer to use a graphical user interface (GUI). Don’t fear if you don’t have experience with the command line, this lab will provide you with a basic tutorial so that you can get up and running.
 
 This lab has a series of steps. First, you will follow the procedure to set up the Raspberry Pi as an Ethernet Gadget. This leverages a convenient feature of the Pi that enables ethernet connections over the USB port. This will allow us to connect to the Pi over an ssh connection in the terminal to control the operation of the Pi. We will also set up file sharing over this network connection so that you have an easy way to transfer data from the Pi where it is captured, to your host computer which has more processing power and a display to be able to analyze and process your captured data.
 
-After setting up your Pi, you will walk through the process of installing your Raspberry Pi camera, taking some test images with the `libcamera` command line tool, and learn the basic features of `picamera`, the Python library that is used to interface with the camera. `picamera` gives you fine grained control over the settings of the camera and offers the low-level control that is necessary for accessing the raw data captured by the sensor which is important for scientific applications like microscopy.
+After setting up your Pi, you will walk through the process of installing your Raspberry Pi camera and learn how to take some test images with the `libcamera` command line tool. Following this, you will learn the basic features of `picamera`, the Python library that is used to interface with the camera. `picamera` gives you fine-grained control over the settings of the camera and offers the low-level control that is necessary for accessing the raw data captured by the sensor which is important for scientific applications like microscopy.
 
 ### Setup Raspberry Pi Zero as Ethernet Gadget
 
@@ -31,7 +34,6 @@ In this section, you will install an operating system on your Raspberry Pi and s
 If you don't already have an SD card with an OS image installed, download the [Raspberry Pi Imager](https://www.raspberrypi.org/software/) and install the operating system onto your SD card. Click the button to choose an operating system and select the `Raspberry Pi OS (32-bit)` option which will download the latest version of Debian Linux for the Raspberry Pi (called `Bullseye` at the time of writing this guide). Then click the `Choose Storage` button and select the SD card you connected to your computer. After choosing the SD card, click the `Write` button to install the operating system.
 
 ::: {#fig-rpi-imager}
-
 ![](images/rpi-imager.png)
 
 Raspberry Pi Imager screenshot
@@ -194,6 +196,7 @@ print("Photo captured and saved.")
 # Close the camera object
 cam.close()
 ```
+
 Code listing for save_image_to_file.py
 
 ### Process Image in Python
@@ -210,7 +213,7 @@ After you have finished setting up the image acquisition and analysis pipeline, 
 
 The following sections list a series of tasks for you to accomplish and submit in your lab writeup.
 
-1.  Image with Scale Bar
+###  Image with Scale Bar
 
 Take an image of an object and plot it in Python using matplotlib and the imshow function. In your plot, make sure to label the axes along with units, give your plot a descriptive title, and use a colorbar.
 
@@ -230,14 +233,12 @@ For your image, use something that is of known length in your image to calculate
 The image below provides an example of what an image with scale bar should look like.
 
 ::: {#fig-example-image}
-
 ![](images/demo-image.png){fig-align="center" width="205"}
 
 An example of a scale bar on a microscope image. From: <a href="https://doi.org/10.1038/s41566-017-0078-z">https://doi.org/10.1038/s41566-017-0078-z</a>
-
 :::
 
-1.  Raw Bayer Image Capture
+### Raw Bayer Image Capture
 
 Color camera sensors are typically formed by putting an array of red, green, and blue filters over the monochrome pixels. A popular configuration is the [Bayer color filter array](https://en.wikipedia.org/wiki/Bayer_filter) (CFA). In this section, you will take and save the raw Bayer data from the sensor. Read the PiCamera documentation [here](https://picamera.readthedocs.io/en/release-1.13/api_array.html#picamera.array.PiBayerArray) on the PiBayerDataArray data structure and use it to capture a Bayer array and save to file. An easy way to save the data is to use the numpy function [save](https://numpy.org/doc/stable/reference/generated/numpy.save.html) to save the raw data to an .npy file. Then the raw data can be reloaded on your host computer using the corresponding [load](https://numpy.org/doc/stable/reference/generated/numpy.load.html#numpy.load) function in numpy.
 
@@ -247,14 +248,14 @@ In your analysis, plot each color channel of the image separately (e.g., separat
 2.  What does each dimension represent?
 3.  Which channel of your captured image is the brightest? Is this what you expect? Why or why not?
 
-### 3. Dark Noise Analysis
+### Dark Noise Analysis
 
 The dark noise value is the value of the image data captured when the sensor is covered (i.e., not exposed to light). Cover your sensor and capture a series of 10 dark frames and answer the following questions. Plot the average image (i.e., 2D image where each pixel is an average of its values across the frames). Then for the red channel of the image only answer the following questions.
 
 1.  What is the mean value of the red channel of your image sequence?
 2.  What is the standard deviation of this array of means calculated from your image sequence?
 
-### 4. Image Intensity vs. Exposure Time
+### Image Intensity vs. Exposure Time
 
 Another important property of a camera is its linearity. In this section, you will take an exposure series and analyze how the average intensity of the sensor varies with exposure time. See the documentation [here](https://picamera.readthedocs.io/en/release-1.13/recipes1.html#capturing-consistent-images) which will help provide information on how to take consistent images by disabling any automatic exposure compensation and directly setting the exposure time (called shutter_speed in picamera).
 
