@@ -1,1 +1,0 @@
-# Magnification Calculation Program

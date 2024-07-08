@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.17">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3d-Printed Microsopes – 3D-printed Microscope Build</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">3d-Printed Microsopes</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-labs" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Labs</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-labs">    
+        <li>
+    <a class="dropdown-item" href="../../labs/">
+ <span class="dropdown-text">Labs Overview</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../labs/lab1/">
+ <span class="dropdown-text">Lab 1: Hello World</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../labs/lab2/">
+ <span class="dropdown-text">Lab 2: Intro to Ray Tracing</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../labs/lab3/">
+ <span class="dropdown-text">Lab 3: 3d-printed Microscope</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link active" data-scroll-target="#learning-objectives"><span class="header-section-number">1</span> Learning Objectives</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">2</span> Setup</a>
+  <ul class="collapse">
+  <li><a href="#makerspace-3d-printer-room-access" id="toc-makerspace-3d-printer-room-access" class="nav-link" data-scroll-target="#makerspace-3d-printer-room-access"><span class="header-section-number">2.1</span> Makerspace 3D Printer Room Access</a></li>
+  <li><a href="#printing-the-microscope-body" id="toc-printing-the-microscope-body" class="nav-link" data-scroll-target="#printing-the-microscope-body"><span class="header-section-number">2.2</span> Printing the Microscope Body</a></li>
+  <li><a href="#assembling-the-microscope" id="toc-assembling-the-microscope" class="nav-link" data-scroll-target="#assembling-the-microscope"><span class="header-section-number">2.3</span> Assembling the Microscope</a></li>
+  <li><a href="#soldering-the-dotstar-led-array" id="toc-soldering-the-dotstar-led-array" class="nav-link" data-scroll-target="#soldering-the-dotstar-led-array"><span class="header-section-number">2.4</span> Soldering the DotStar LED Array</a></li>
+  <li><a href="#soldering-the-pi-header" id="toc-soldering-the-pi-header" class="nav-link" data-scroll-target="#soldering-the-pi-header"><span class="header-section-number">2.5</span> Soldering the Pi Header</a></li>
+  <li><a href="#connecting-the-led-matrix" id="toc-connecting-the-led-matrix" class="nav-link" data-scroll-target="#connecting-the-led-matrix"><span class="header-section-number">2.6</span> Connecting the LED Matrix</a></li>
+  <li><a href="#mounting-the-led-array" id="toc-mounting-the-led-array" class="nav-link" data-scroll-target="#mounting-the-led-array"><span class="header-section-number">2.7</span> Mounting the LED Array</a></li>
+  </ul></li>
+  <li><a href="#blinky-blinky" id="toc-blinky-blinky" class="nav-link" data-scroll-target="#blinky-blinky"><span class="header-section-number">3</span> Blinky Blinky</a></li>
+  <li><a href="#microscope-image-capture" id="toc-microscope-image-capture" class="nav-link" data-scroll-target="#microscope-image-capture"><span class="header-section-number">4</span> Microscope Image Capture</a>
+  <ul class="collapse">
+  <li><a href="#resolution-calculation" id="toc-resolution-calculation" class="nav-link" data-scroll-target="#resolution-calculation"><span class="header-section-number">4.1</span> Resolution Calculation</a></li>
+  <li><a href="#resolution-analysis" id="toc-resolution-analysis" class="nav-link" data-scroll-target="#resolution-analysis"><span class="header-section-number">4.2</span> Resolution Analysis</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">3D-printed Microscope Build</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="learning-objectives" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="learning-objectives"><span class="header-section-number">1</span> Learning Objectives</h2>
+<p>By the end of this lab you will have…</p>
+<ul>
+<li>Built your own microscope</li>
+<li>Learned how to control the LED array from the Raspberry Pi</li>
+<li>Captured an image and analyzed it to determine the resolution of the optical system.</li>
+</ul>
+</section>
+<section id="setup" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="setup"><span class="header-section-number">2</span> Setup</h2>
+<p>In this section you will put together the individual components for your microscope that are in your kit. This consists of printing the mount, soldering the LED array and Raspberry Pi headers, and assembling the parts with the screws and springs included in your kit.</p>
+<p>The microscope you will build is based on the microscope developed by Tomas Aidukas, Regina Eckert, Andrew R. Harvey, Laura Waller, and Pavan C. Konda in their 2019 paper “Low-cost, sub-micron resolution, wide-field computational microscopy using opensource hardware“. You can read the paper <a href="https://www.nature.com/articles/s41598-019-43845-9.">here</a> and access the supplementary information <a href="https://static-content.springer.com/esm/art%3A10.1038%2Fs41598-019-43845-9/MediaObjects/41598_2019_43845_MOESM1_ESM.pdf">here</a>.</p>
+<div id="fig-3d-printed-microscope" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-3d-printed-microscope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/image001.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-3d-printed-microscope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: A photo of the finished 3D-printed microscope.
+</figcaption>
+</figure>
+</div>
+<section id="makerspace-3d-printer-room-access" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="makerspace-3d-printer-room-access"><span class="header-section-number">2.1</span> Makerspace 3D Printer Room Access</h3>
+<p>Before printing the parts for your microscope, you’ll need to get access to the 3D printing room in the Makerspace if you haven’t done so already. You will need to read two policies and take the associated quizzes: the <a href="https://docs.google.com/document/d/1-pycsGqeUptorvEH-Ti66ssmvKLrtopvLRZ9YNMSMKo/edit?usp=sharing">General Use Policy</a> and the <a href="https://docs.google.com/document/d/18KnOgRLm8ZzSb4vXc_eUFEXnDgCNlfWZe4PEllPvzBI/edit?usp=sharing">3D printer policy</a>. After finishing the quizzes, you should shortly receive swipe access to the 3d printer room.</p>
+</section>
+<section id="printing-the-microscope-body" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="printing-the-microscope-body"><span class="header-section-number">2.2</span> Printing the Microscope Body</h3>
+<p>To build your microscope you’ll need to print out the individual parts on the 3d printer. You can use the <a href="https://www.prusa3d.com/category/original-prusa-i3-mk3s/">Original Prusa i3 MK3S+</a> PLA printers in the HMC Makerspace. To print them, you’ll need the stereolithography (.stl) files. The files are available in the shared folder <a href="https://drive.google.com/drive/folders/1C7KI31S9kRmVvIGzUh3bcEw9_TNJwdA3?usp=sharing">here</a> under the stl subdirectory. The scad files used to generate the stl files are also included in the folder in the scad subdirectory. If you wish to make any modifications or experiment with the files, you can download <a href="https://openscad.org">OpenSCAD</a> and view the files.</p>
+<p>After downloading the files, you’ll need to prepare the prints on the printers in the Makerspace. Either the “0.3 mm DRAFT” or “0.15 mm SPEED” print settings should print at sufficient resolution and a reasonable amount of time.</p>
+<p>To print the files, you will use the <a href="https://www.prusa3d.com/page/prusaslicer_424/">PrusaSlicer</a> software. This software takes the .stl files and slices them into layers which are then translated into directions telling the printer where to move to lay down the individual layers for your object. These instructions for the Prusa printers are written in a file format called <a href="https://en.wikipedia.org/wiki/G-code">.gcode</a> files, which are commonly used in applications for Computer Numerical Control (CNC) machines that are needed by the printers. After slicing and creating the .gcode files, they must be transferred to an SD card and inserted into the SD card slot on the printers in order to print the files.</p>
+<p>The easiest way to print is to use the computer in the Makerspace 3D print room directly to slice and export the files for the printers since the profiles are already configured properly. You can download a copy of the .gcode file for all the required parts <a href="https://drive.google.com/file/d/1p4GXDUhPFlSWtJKsa9PdpdZh-6PTnrB9/view?usp=sharing">here</a>. If you open this in PrusaSlicer you will see all the parts arranged on the build plate. I’ve printed this on the printer with success, but it’s a little risky because you are doing everything in one shot so if the print fails, you may have multiple failed parts.</p>
+<p>If you wish, you may also print the parts individually by manually adding them to the build plate using the menu option “File &gt; Import &gt; Import STL/OBJ/AMF/3MF…” option. This will allow you to individually add the parts.</p>
+<div id="fig-prusa-slicer" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-prusa-slicer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/image002.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-prusa-slicer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: A screenshot of the Import menu in PrusaSlicer.
+</figcaption>
+</figure>
+</div>
+<p>Then you’ll need to move and rotate them to place them on the build plate. Note that you’ll want to orient the parts so that you minimize the number of overhangs since the 3D printer build layer upon layer from bottom to top. Sometimes these are unavoidable though (like on the structure.stl part) and this is ok most of the time even though the print quality for those overhangs is a bit less polished.</p>
+<p>You can log on to the computer on the left side of the desk to the right of the printers along the wall. Then either download the files from the web to the computer or transfer them using a USB thumb drive. Open them in PrusaSlicer and add them to the build plate. You can print all of the parts together in a single print using the</p>
+</section>
+<section id="assembling-the-microscope" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="assembling-the-microscope"><span class="header-section-number">2.3</span> Assembling the Microscope</h3>
+<p>After all the parts have been printed, you need to assemble the microscope. There are two main sub-assemblies: the bottom structure which holds the LED array and Pi and the top assembly which holds the spring-loaded camera and lens holder which slides up and down to focus.</p>
+<p>See the instructions <a href="https://static-content.springer.com/esm/art%3A10.1038%2Fs41598-019-43845-9/MediaObjects/41598_2019_43845_MOESM1_ESM.pdf">here</a> starting on line 115 describing how to assemble parts.</p>
+<section id="installing-the-camera-assembly" class="level4" data-number="2.3.1">
+<h4 data-number="2.3.1" class="anchored" data-anchor-id="installing-the-camera-assembly"><span class="header-section-number">2.3.1</span> Installing the Camera Assembly</h4>
+<p>The camera module is fragile and sensitive to static discharge, so try to touch a large grounded metal object (e.g., metal table, faucet, etc.) before beginning this section.</p>
+<p>To achieve a ~1.5x magnification with the lens currently on the camera you need to remove the camera lens and displace it from the sensor by a few mm. To remove the lens, carefully use the <a href="https://www.adafruit.com/product/3518">circular white plastic tool</a> that came with the camera to unscrew the lens. Then take the lens all the way off. If your camera module is not already secured to the PCB, remove the small plastic sheet covering the adhesive tape on the back of the module and firmly press it onto the PCB.</p>
+<p>After removing the lens, press it into the camera mount with the small aperture facing toward the bottom (in other words, oriented in the same way with respect to the camera sensor as it originally was, just now at a larger offset). Then, attach the camera PCB to the camera mount using the small M1.4 screws in your kit. Make sure the camera cable port is facing out from the trapezoidal side of the mount which connects to the holder.</p>
+</section>
+<section id="installing-the-camera-mount" class="level4" data-number="2.3.2">
+<h4 data-number="2.3.2" class="anchored" data-anchor-id="installing-the-camera-mount"><span class="header-section-number">2.3.2</span> Installing the Camera Mount</h4>
+<p>Next slot the camera mount into the mount holder. You may need to slightly stretch the springs if you are having trouble getting them mounted. It is easiest to first connect them to the base of the camera mount using the bar on the bottom and then pushing the entire camera mount unit up in order to get the top side of the springs to attach to the holder near the focus adjustment screw.</p>
+<p>After you finish this step, the entire camera mount is finished. Attach it to the flat top piece using two M6 screws. You may need bolts as well, but normally screwing it into the plastic holes is sufficient.</p>
+</section>
+</section>
+<section id="soldering-the-dotstar-led-array" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="soldering-the-dotstar-led-array"><span class="header-section-number">2.4</span> Soldering the DotStar LED Array</h3>
+<p>The LED array you have in your kit is the <a href="https://www.adafruit.com/product/3444">8x8 DotStar Array from Adafruit</a>. This is a very bright array of RGB LEDs. The array comes with a capacitor which can be used as a decoupling capacitor to smooth out any fluctuations in the power supply voltage. You also have a 4-pin, right-angle male header strip. Before soldering the headers on, use two pairs of needle-nose pliers to bend the header into an S shape. Then solder the short half of the header onto the circular pads on the bottom of the LED array PCB. You will connect to these headers with your hookup wire to connect the LED array to your Raspberry Pi.</p>
+<div id="fig-dotstar-array-header" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dotstar-array-header-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/image003.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dotstar-array-header-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: A photo of the bent right-angle header.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="soldering-the-pi-header" class="level3" data-number="2.5">
+<h3 data-number="2.5" class="anchored" data-anchor-id="soldering-the-pi-header"><span class="header-section-number">2.5</span> Soldering the Pi Header</h3>
+<p>Your Raspberry Pi comes with a spot on the board to connect a 2x20 header. You have a 2x20 right-angle female header which you will need to solder to this connection.</p>
+</section>
+<section id="connecting-the-led-matrix" class="level3" data-number="2.6">
+<h3 data-number="2.6" class="anchored" data-anchor-id="connecting-the-led-matrix"><span class="header-section-number">2.6</span> Connecting the LED Matrix</h3>
+<p>After soldering it, you can connect the Raspberry Pi to your LED matrix using the jumper wires in your kit. Before making any connections, disconnect your Pi from USB power.</p>
+<p>See the instructions <a href="https://learn.adafruit.com/adafruit-dotstar-leds/python-circuitpython">here</a> for the pinout, connection diagram, and instructions on using the library. The DotStar array is controlled using the hardware SPI interface on the Pi. Power the LED array by connecting the 5 V and GND pins to the 5 V and GND pins on your Pi. Then connect the SDI pin on the array to the MOSI pin on the Pi (pin 19) and the SCL pin to the array to the SCLK pin on the Pi (pin 23). See the diagram <a href="https://pi4j.com/1.2/images/j8header-zero-large.png">here</a> as a reference. Make sure to double check your connections (best to have a friend check!) to make sure you have everything connected properly before powering it up.</p>
+<p>In addition to connecting the array to the correct pins, you’ll need to enable the SPI interface in the Pi configuration menu. Run <code>sudo raspi-config</code> and enable SPI under the “Interface Options” sub-menu.</p>
+</section>
+<section id="mounting-the-led-array" class="level3" data-number="2.7">
+<h3 data-number="2.7" class="anchored" data-anchor-id="mounting-the-led-array"><span class="header-section-number">2.7</span> Mounting the LED Array</h3>
+<p>Because the LED array is 8x8, there is no natural center LED. To fix this, the LED array mount is shifted by half an LED pitch up and to the right. This means that the array is now centered at pixel index (3,3) which is the pixel in the 4th row and 4th column counting from the bottom left since the indexing starts at 0. Pixel (0,0) should be located in the bottom left corner when viewing the microscope from the side away from the translation stage. See photo below where LED (0,0) is illuminated. So, to use only a 7x7 subset of the matrix, we should only write to the first 7 rows and columns row_idx = [0,6] and col_idx = [0,6].</p>
+<div id="fig-led-array-mounting" class="quarto-figure quarto-figure-center quarto-float anchored" data-ncols="2">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-led-array-mounting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/image004.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-led-array-mounting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: A photo showing the correct alignment of the LED array.
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="blinky-blinky" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="blinky-blinky"><span class="header-section-number">3</span> Blinky Blinky</h2>
+<p>After setting up your microscope, the first thing we will do is test out the LED array. Activate the virtual environment you set up in Lab 1 (by running <code>source ./.env/bin/activate</code> in your shared directory). Then, we need to install the libraries for the DotStar array (documentation found <a href="https://circuitpython.readthedocs.io/projects/dotstar/en/latest/">here</a>). To install it, run <code>sudo pip3 install adafruit-circuitpython-dotstar</code> in your virtual environment. After installing, open up a Python prompt and run the following lines of code.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> board</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> adafruit_dotstar <span class="im">as</span> dotstar</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>N_dots <span class="op">=</span> <span class="dv">8</span><span class="op">*</span><span class="dv">8</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>dots <span class="op">=</span> dotstar.DotStar(board.SCK, board.MOSI, N_dots, brightness<span class="op">=</span><span class="fl">0.05</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>After importing libraries and creating the DotStar object, try lighting up some single LEDs using a line following the syntax below.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>led_idx <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dots[led_idx] <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>See if you can figure out the indexing of your array to turn on the LEDs near the center of the array. You can turn off the LED either by writing it to zero (0,0,0) or using the built in functions to clear the array.</p>
+<p>Create scripts in Python to do each of the following. In this lab we’ll only use the red channel, so you only need to support turning on the red LEDs in the matrix. - Turn on all the LEDs at the same time - Turn on a single LED at a specified x,y location</p>
+</section>
+<section id="microscope-image-capture" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="microscope-image-capture"><span class="header-section-number">4</span> Microscope Image Capture</h2>
+<p>After figuring out how to control your LED array, the next thing we will do is to take an image and analyze it. For all of these images we will do our analysis using red illumination and only take the data from the red channel of the raw Bayer data.</p>
+<section id="resolution-calculation" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="resolution-calculation"><span class="header-section-number">4.1</span> Resolution Calculation</h3>
+<p>To measure the resolution of our microscope we will us a standard optical target called a US Air Force (USAF) target. You may read more about the targets <a href="https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=4338">here</a>. This target has sets of bars at decreasingly small pitches or separations. These can be used to determine the finest feature size that can be resolved by the optical system. We will talk much more about resolution in future weeks, but for now, you just need to know that the resolution of an optical system is determined by two quantities: the wavelength and the numerical aperture (or equivalently angular acceptance range) of the optical system.</p>
+<p>To determine the overall resolution of the system we need to take an image and then look at the set of bars with the smallest resolution that we are able to resolve. There are several technical criteria to specific the resolution (e.g., Abbé, Sparrow, Rayleigh), each with their own respective equations, but for the context of this lab we will use Abbé’s definition.</p>
+<p><span class="math display">\[
+d=\frac{\lambda}{(2 n \sin⁡(\theta)}=\frac{\lambda}{NA_\text{illumination} + NA_\text{collection}}
+\]</span></p>
+<p>Solving this equation for <span class="math inline">\(d\)</span> yields the minimum distance that can be resolved by our optical system.</p>
+<p>For our optical system, using the definitions above, answer the following questions:</p>
+<ol type="1">
+<li>What is the NA of the microscope (recall from Lab 2 or calculate the NA from the f-number and aperture diameter)?</li>
+<li>What is the maximum value of the NA in air?</li>
+<li>What is the minimum resolvable distance <span class="math inline">\(d\)</span> using red illumination (~630 nm) and the maximum NA in air calculated above?</li>
+<li>What is the minimum resolvable distance <span class="math inline">\(d\)</span> using red illumination (~630 nm) and this microscope?</li>
+</ol>
+</section>
+<section id="resolution-analysis" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="resolution-analysis"><span class="header-section-number">4.2</span> Resolution Analysis</h3>
+<p>In this section you will take an image of the USAF target using your microscope and analyze it. Set up your microscope and turn on all the red LEDs. Then, using VNC, use the command line preview tool libcamera to preview the camera by running “libcamera-still -t 0”. This takes an image with an infinite timeout. To exit the window, use ctrl + c.&nbsp;Adjust the focal screw to bring the image into the sharpest focus you can and then exit the preview.</p>
+<div id="fig-usaf-resolution-target" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-usaf-resolution-target-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/image009.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-usaf-resolution-target-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: R1DS1P - Positive 1951 USAF Test Target, Ø1” from Thorlabs (<a href="https://www.thorlabs.com/thorproduct.cfm?partnumber=R1DS1P">link</a>)
+</figcaption>
+</figure>
+</div>
+<p>Take a raw Bayer image of the sample and save it to a .npy file. To capture consistent images, make sure to</p>
+<ul>
+<li>Turn off the automatic exposure setting by setting the <code>exposure_mode</code> property of the PiCamera object to “off”</li>
+<li>Set the shutter_speed property to a value which maximizes the dynamic range of the image you capture. In other words, choose a value for the exposure time such that the maximum value of your image spans nearly the whole range of values available for each pixel (you can calculate this value using the bit depth. For example, for an 8-bit depth your pixels can range from 0 to <span class="math inline">\(2^8-1=255\)</span>. You should shoot to have the max value of your image reach to roughly 90% of the maximum value without exceeding the value and clipping).</li>
+</ul>
+<p>After taking the image, transfer the file to your host machine, load it into Python, and plot the red channel. You’ll notice that the raw red channel is sparse (i.e., 75% of the pixels are black). This is because of the Bayer array which splits the channels into red, green, and blue pixels.</p>
+<p>Before performing your analysis, write Python code to process the raw Bayer data from the red channel and remove the zero entries as shown in the figure below.</p>
+<div id="fig-bayer-array" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bayer-array-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/image010.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bayer-array-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Bayer color filter array single channel selection
+</figcaption>
+</figure>
+</div>
+<p>Using the processed image of the red channel, answer the questions below:</p>
+<ul>
+<li>What is the effective pixel pitch of the red channel images on the camera sensor plane (i.e., what is the distance between adjacent red pixels?)?</li>
+<li>What is the effective pixel pitch of the red channel images on the object plane?</li>
+<li>What is the sampling frequency of your image sensor at the sample plane in cycles per millimeter (i.e., the inverse of the pixel pitch at the object plane).</li>
+<li>Given the minimum detectable feature size <span class="math inline">\(d\)</span> for this microscope from the Abbé resolution equation earlier, what spatial frequency does this correspond to?</li>
+<li>Does your camera sensor satisfy the Shannon-Nyquist sampling theorem requirement that the sampling frequency must be twice the maximum spatial frequency in the sample field?</li>
+<li>What is the minimum resolvable feature in the image? To determine this, create a zoomed-in image of a region of interest of the USAF target where you can start to see the bars blur together. The size of the smallest bar separation that you can measure is a good estimate of your system resolution.</li>
+<li>Save a copy of your zoomed-in ROI image. Make sure to follow good presentation practices and include a scale bar, a figure title, axis labels, and a colorbar.</li>
+<li>Create a 1D plot of the intensity of perpendicular to three bar target: one that is clearly resolved, one that is just barely resolved, and one that is unresolved. See <a href="https://www.nature.com/articles/s41598-019-43845-9/figures/3">Figure 3 from the paper</a> for an example of the types of plots that we are looking for here.</li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
