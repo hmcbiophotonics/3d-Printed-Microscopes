@@ -1,10 +1,45 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "3d-Printed Microsopes",
+    "objectID": "slides/2024-summer-workshop.html#learning-goals",
+    "href": "slides/2024-summer-workshop.html#learning-goals",
+    "title": "3d-printed Microscopes",
+    "section": "Learning Goals",
+    "text": "Learning Goals\nBy the end of this workshop, you will be able to…\n\nConnect to a Raspberry Pi and capture an image using the Raspberry Pi camera.\nTake images with a 3d-printed microscope system which you have built.\nSee connections between optics theory and real world applications.\nExperiment with basic computational microscopy algorigthms."
+  },
+  {
+    "objectID": "slides/2024-summer-workshop.html#the-3d-printed-microscope-platform-is-built-around-a-rpi-and-rpi-camera",
+    "href": "slides/2024-summer-workshop.html#the-3d-printed-microscope-platform-is-built-around-a-rpi-and-rpi-camera",
+    "title": "3d-printed Microscopes",
+    "section": "The 3d-printed microscope platform is built around a RPi and RPi camera",
+    "text": "The 3d-printed microscope platform is built around a RPi and RPi camera\n\n\n\n\n\n\n\n\nRaspberry Pi Camera Module 2 NoIR\n\n\n\n\n\n\n\nRaspberry Pi Zero 2 W\n\n\n\n\n\n\nFigure 1: Raspberry Pi & Raspberry Pi Camera\n\n\n\nThe Raspberry Pi Camera Documentation can be found here."
+  },
+  {
+    "objectID": "slides/2024-summer-workshop.html#working-with-the-system-will-require-some-command-line-and-python-programming",
+    "href": "slides/2024-summer-workshop.html#working-with-the-system-will-require-some-command-line-and-python-programming",
+    "title": "3d-printed Microscopes",
+    "section": "Working with the system will require some command line and Python programming",
+    "text": "Working with the system will require some command line and Python programming\n\nThe Raspberry Pi runs a variant of Linux.\nYou will take images using the command line utility libcamera or using the Python module picamera.\nWe’ll use the Pi to capture the images, but offload the raw data to a more powerful computer (e.g., your laptop) for processing since the Pi is not well equipped for analysis and plotting."
+  },
+  {
+    "objectID": "slides/2024-summer-workshop.html#instructions-for-the-labs-can-be-found-on-the-website",
+    "href": "slides/2024-summer-workshop.html#instructions-for-the-labs-can-be-found-on-the-website",
+    "title": "3d-printed Microscopes",
+    "section": "Instructions for the labs can be found on the website",
+    "text": "Instructions for the labs can be found on the website\nThe link is here.\nPlease take notes of areas you feel could be improved or spots where you feel stuck. Your feedback is super valuable!\nAt the end, I’ll ask you each to write up a short summary of what you learned."
+  },
+  {
+    "objectID": "slides/2024-summer-workshop.html#before-you-go",
+    "href": "slides/2024-summer-workshop.html#before-you-go",
+    "title": "3d-printed Microscopes",
+    "section": "Before you go",
+    "text": "Before you go\nA few reminders:\n\nAsk questions often. It’s normal to get stuck!\nKeep notes of your feedback. If something is confusing for you, it definitely will be confusing for someone else.\nHave fun!"
+  },
+  {
+    "objectID": "quarto-publish-notes.html",
+    "href": "quarto-publish-notes.html",
+    "title": "1 Instructions for Publishing New Version of the Website",
     "section": "",
-    "text": "This site contains resources related to learning about computational microscopy by building your very own 3d-printed microscope based around a Raspberry Pi single-board computer and a Raspberry Pi camera module.\nYou can find information about getting started on the Labs page.\n\n\n\n\n\n\nFigure 1: A photo of the 3d-printed microscopy platform."
+    "text": "1 Instructions for Publishing New Version of the Website\nThe repository is set up to use the quarto publish command.\nGithub pages should be configured to deploy from the gh-pages branch and (NB!) it should render from the root directory (/) even though the Quarto project lives at /docs in the main repo. The publish command takes the rendered content and puts it at the root level of the gh-pages branch (essentially copying /docs/_site/ to / on that branch)\n\nYou also need to add a blank .nojekyll file to the docs directory. This ensures that Github doesn’t try to do any additional processing on the files when you publish (the build will fail if you forget this step.)\nAfter you do these two things, you can update the site by running quarto publish from the /docs/ directory. This will publish the site by creating a new commit on gh-pages and pushing to the remote. This in turn triggers a Github action to update the site."
   },
   {
     "objectID": "labs/lab2/index.html",
@@ -152,5 +187,26 @@
     "title": "3D-printed Microscope Build",
     "section": "4 Microscope Image Capture",
     "text": "4 Microscope Image Capture\nAfter figuring out how to control your LED array, the next thing we will do is to take an image and analyze it. For all of these images we will do our analysis using red illumination and only take the data from the red channel of the raw Bayer data.\n\n4.1 Resolution Calculation\nTo measure the resolution of our microscope we will us a standard optical target called a US Air Force (USAF) target. You may read more about the targets here. This target has sets of bars at decreasingly small pitches or separations. These can be used to determine the finest feature size that can be resolved by the optical system. We will talk much more about resolution in future weeks, but for now, you just need to know that the resolution of an optical system is determined by two quantities: the wavelength and the numerical aperture (or equivalently angular acceptance range) of the optical system.\nTo determine the overall resolution of the system we need to take an image and then look at the set of bars with the smallest resolution that we are able to resolve. There are several technical criteria to specific the resolution (e.g., Abbé, Sparrow, Rayleigh), each with their own respective equations, but for the context of this lab we will use Abbé’s definition.\n\\[\nd=\\frac{\\lambda}{(2 n \\sin⁡(\\theta)}=\\frac{\\lambda}{NA_\\text{illumination} + NA_\\text{collection}}\n\\]\nSolving this equation for \\(d\\) yields the minimum distance that can be resolved by our optical system.\nFor our optical system, using the definitions above, answer the following questions:\n\nWhat is the NA of the microscope (recall from Lab 2 or calculate the NA from the f-number and aperture diameter)?\nWhat is the maximum value of the NA in air?\nWhat is the minimum resolvable distance \\(d\\) using red illumination (~630 nm) and the maximum NA in air calculated above?\nWhat is the minimum resolvable distance \\(d\\) using red illumination (~630 nm) and this microscope?\n\n\n\n4.2 Resolution Analysis\nIn this section you will take an image of the USAF target using your microscope and analyze it. Set up your microscope and turn on all the red LEDs. Then, using VNC, use the command line preview tool libcamera to preview the camera by running “libcamera-still -t 0”. This takes an image with an infinite timeout. To exit the window, use ctrl + c. Adjust the focal screw to bring the image into the sharpest focus you can and then exit the preview.\n\n\n\n\n\n\nFigure 5: R1DS1P - Positive 1951 USAF Test Target, Ø1” from Thorlabs (link)\n\n\n\nTake a raw Bayer image of the sample and save it to a .npy file. To capture consistent images, make sure to\n\nTurn off the automatic exposure setting by setting the exposure_mode property of the PiCamera object to “off”\nSet the shutter_speed property to a value which maximizes the dynamic range of the image you capture. In other words, choose a value for the exposure time such that the maximum value of your image spans nearly the whole range of values available for each pixel (you can calculate this value using the bit depth. For example, for an 8-bit depth your pixels can range from 0 to \\(2^8-1=255\\). You should shoot to have the max value of your image reach to roughly 90% of the maximum value without exceeding the value and clipping).\n\nAfter taking the image, transfer the file to your host machine, load it into Python, and plot the red channel. You’ll notice that the raw red channel is sparse (i.e., 75% of the pixels are black). This is because of the Bayer array which splits the channels into red, green, and blue pixels.\nBefore performing your analysis, write Python code to process the raw Bayer data from the red channel and remove the zero entries as shown in the figure below.\n\n\n\n\n\n\nFigure 6: Bayer color filter array single channel selection\n\n\n\nUsing the processed image of the red channel, answer the questions below:\n\nWhat is the effective pixel pitch of the red channel images on the camera sensor plane (i.e., what is the distance between adjacent red pixels?)?\nWhat is the effective pixel pitch of the red channel images on the object plane?\nWhat is the sampling frequency of your image sensor at the sample plane in cycles per millimeter (i.e., the inverse of the pixel pitch at the object plane).\nGiven the minimum detectable feature size \\(d\\) for this microscope from the Abbé resolution equation earlier, what spatial frequency does this correspond to?\nDoes your camera sensor satisfy the Shannon-Nyquist sampling theorem requirement that the sampling frequency must be twice the maximum spatial frequency in the sample field?\nWhat is the minimum resolvable feature in the image? To determine this, create a zoomed-in image of a region of interest of the USAF target where you can start to see the bars blur together. The size of the smallest bar separation that you can measure is a good estimate of your system resolution.\nSave a copy of your zoomed-in ROI image. Make sure to follow good presentation practices and include a scale bar, a figure title, axis labels, and a colorbar.\nCreate a 1D plot of the intensity of perpendicular to three bar target: one that is clearly resolved, one that is just barely resolved, and one that is unresolved. See Figure 3 from the paper for an example of the types of plots that we are looking for here."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "3d-Printed Microscopes",
+    "section": "",
+    "text": "This site contains resources related to learning about computational microscopy by building your very own 3d-printed microscope based around a Raspberry Pi single-board computer and a Raspberry Pi camera module."
+  },
+  {
+    "objectID": "index.html#acknowledgements",
+    "href": "index.html#acknowledgements",
+    "title": "3d-Printed Microscopes",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nThis work is based on the work of Tomas Aidukas et. al. in their paper “Low-cost, sub-micron resolution, wide-field computational microscopy using opensource hardware.” The paper can be found here.\n\n\n\n\n\n\nFigure 1: The paper which inspired this project. (link)"
+  },
+  {
+    "objectID": "index.html#where-to-start",
+    "href": "index.html#where-to-start",
+    "title": "3d-Printed Microscopes",
+    "section": "Where to Start",
+    "text": "Where to Start\nYou can find information about getting started on the Labs page.\n\n\n\n\n\n\nFigure 2: A photo of the 3d-printed microscopy platform."
   }
 ]

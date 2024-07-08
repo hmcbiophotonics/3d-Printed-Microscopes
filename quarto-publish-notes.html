@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>3d-Printed Microscopes</title>
+<title>3d-Printed Microscopes – quarto-publish-notes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -89,7 +89,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -131,61 +131,23 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link active" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
-  <li><a href="#where-to-start" id="toc-where-to-start" class="nav-link" data-scroll-target="#where-to-start">Where to Start</a></li>
+  <li><a href="#instructions-for-publishing-new-version-of-the-website" id="toc-instructions-for-publishing-new-version-of-the-website" class="nav-link active" data-scroll-target="#instructions-for-publishing-new-version-of-the-website"><span class="header-section-number">1</span> Instructions for Publishing New Version of the Website</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">3d-Printed Microscopes</h1>
-</div>
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p>This site contains resources related to learning about computational microscopy by building your very own 3d-printed microscope based around a Raspberry Pi single-board computer and a Raspberry Pi camera module.</p>
-<section id="acknowledgements" class="level2">
-<h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
-<p>This work is based on the work of Tomas Aidukas et. al.&nbsp;in their paper “Low-cost, sub-micron resolution, wide-field computational microscopy using opensource hardware.” The paper can be found <a href="https://www.nature.com/articles/s41598-019-43845-9">here</a>.</p>
-<div id="fig-microsope-paper" class="quarto-figure quarto-figure-center quarto-float anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-microsope-paper-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<p><a href="https://www.nature.com/articles/s41598-019-43845-9"><img src="images/image-1.png" class="img-fluid figure-img"></a></p>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-microsope-paper-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: The paper which inspired this project. (<a href="https://www.nature.com/articles/s41598-019-43845-9">link</a>)
-</figcaption>
-</figure>
-</div>
-</section>
-<section id="where-to-start" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-start">Where to Start</h2>
-<p>You can find information about getting started on the <a href="./labs/">Labs</a> page.</p>
-<div id="fig-3d-printed-microscope" class="quarto-figure quarto-figure-center quarto-float anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-3d-printed-microscope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/3d-printed-microscope.png" class="img-fluid figure-img" style="width:50.0%">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-3d-printed-microscope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: A photo of the 3d-printed microscopy platform.
-</figcaption>
-</figure>
-</div>
+<section id="instructions-for-publishing-new-version-of-the-website" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Instructions for Publishing New Version of the Website</h1>
+<p>The repository is set up to use the <code>quarto publish</code> command.</p>
+<p>Github pages should be configured to deploy from the <code>gh-pages</code> branch and (NB!) it should render from the root directory (<code>/</code>) even though the Quarto project lives at <code>/docs</code> in the main repo. The publish command takes the rendered content and puts it at the root level of the <code>gh-pages</code> branch (essentially copying <code>/docs/_site/</code> to <code>/</code> on that branch)</p>
+<p><img src="images/image.png" class="img-fluid"></p>
+<p>You also need to add a blank <code>.nojekyll</code> file to the <code>docs</code> directory. This ensures that Github doesn’t try to do any additional processing on the files when you publish (the build will fail if you forget this step.)</p>
+<p>After you do these two things, you can update the site by running <code>quarto publish</code> from the <code>/docs/</code> directory. This will publish the site by creating a new commit on <code>gh-pages</code> and pushing to the remote. This in turn triggers a Github action to update the site.</p>
 
 
 </section>

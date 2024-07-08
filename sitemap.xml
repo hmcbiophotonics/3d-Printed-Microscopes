@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://hmcbiophotonics.github.io/3d-printed-Microscopes/index.html</loc>
-    <lastmod>2024-07-08T17:29:36.969Z</lastmod>
+    <loc>https://hmcbiophotonics.github.io/3d-printed-Microscopes/slides/2024-summer-workshop.html</loc>
+    <lastmod>2024-07-08T20:03:21.779Z</lastmod>
+  </url>
+  <url>
+    <loc>https://hmcbiophotonics.github.io/3d-printed-Microscopes/quarto-publish-notes.html</loc>
+    <lastmod>2024-07-08T17:42:46.564Z</lastmod>
   </url>
   <url>
     <loc>https://hmcbiophotonics.github.io/3d-printed-Microscopes/labs/lab2/index.html</loc>
-    <lastmod>2024-07-08T17:29:36.982Z</lastmod>
+    <lastmod>2024-07-08T20:01:58.680Z</lastmod>
   </url>
   <url>
     <loc>https://hmcbiophotonics.github.io/3d-printed-Microscopes/labs/index.html</loc>
@@ -23,5 +27,9 @@
   <url>
     <loc>https://hmcbiophotonics.github.io/3d-printed-Microscopes/labs/lab3/index.html</loc>
     <lastmod>2024-07-08T17:29:36.992Z</lastmod>
+  </url>
+  <url>
+    <loc>https://hmcbiophotonics.github.io/3d-printed-Microscopes/index.html</loc>
+    <lastmod>2024-07-08T19:58:11.061Z</lastmod>
   </url>
 </urlset>
