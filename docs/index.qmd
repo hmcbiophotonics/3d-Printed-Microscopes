@@ -1,0 +1,13 @@
+---
+title: "3d-Printed Microsopes"
+---
+
+This site contains resources related to learning about computational microscopy by building your very own 3d-printed microscope based around a Raspberry Pi single-board computer and a Raspberry Pi camera module.
+
+You can find information about getting started on the [Labs](./labs/) page.
+
+::: {#fig-3d-printed-microscope}
+![](images/3d-printed-microscope.png){width=50%}
+
+A photo of the 3d-printed microscopy platform.
+:::

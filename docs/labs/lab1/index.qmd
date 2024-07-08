@@ -1,0 +1,276 @@
+---
+title: Introduction to the Raspberry Pi and Raspberry Pi Camera Module
+format:
+  html:
+    number-sections: true
+---
+
+## Learning Objectives
+
+By the end of this lab you will have...
+
+-   Set up an operating system on your Raspberry Pi and configured it for headless operation using ethernet over USB.
+-   Set up file sharing between the Pi and your host computer using Samba to allow for data to be easily transferred between the two systems.
+-   Set up Python in a virtual environment on your Pi to control data acquisition from the camera
+-   Connected a Raspberry Pi camera to you Pi and taken a series of images using both the libcamera command line tool and the Python package picamera
+-   Performed basic image processing and analysis of the captured images in Python
+
+Remember to track the time you spend on this assignment, as you will be asked to submit it along with your work.
+
+## Instructions
+
+The first step is to get your Raspberry Pi set up. These labs will use the [Raspberry Pi Zero 2 W](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/) and a [Raspberry Pi Camera Module](https://www.raspberrypi.com/products/pi-noir-camera-v2/) (specifically the NoIR version which has the IR shortpass filter removed to enable capturing light from a wider range of optical wavelengths.) The Raspberry Pi will be used as an external peripheral and controlled over the command line with ssh and through VNC if you prefer to use a graphical user interface (GUI). Don’t fear if you don’t have experience with the command line, this lab will provide you with a basic tutorial so that you can get up and running.
+
+This lab has a series of steps. First, you will follow the procedure to set up the Raspberry Pi as an Ethernet Gadget. This leverages a convenient feature of the Pi that enables ethernet connections over the USB port. This will allow us to connect to the Pi over an ssh connection in the terminal to control the operation of the Pi. We will also set up file sharing over this network connection so that you have an easy way to transfer data from the Pi where it is captured, to your host computer which has more processing power and a display to be able to analyze and process your captured data.
+
+After setting up your Pi, you will walk through the process of installing your Raspberry Pi camera and learn how to take some test images with the `libcamera` command line tool. Following this, you will learn the basic features of `picamera`, the Python library that is used to interface with the camera. `picamera` gives you fine-grained control over the settings of the camera and offers the low-level control that is necessary for accessing the raw data captured by the sensor which is important for scientific applications like microscopy.
+
+### Setup Raspberry Pi Zero as Ethernet Gadget
+
+#### Installing the Operating System
+
+In this section, you will install an operating system on your Raspberry Pi and set it up so that you can control it in a headless configuration (i.e., without a dedicated external monitor) from your personal computer
+
+If you don't already have an SD card with an OS image installed, download the [Raspberry Pi Imager](https://www.raspberrypi.org/software/) and install the operating system onto your SD card. Click the button to choose an operating system and select the `Raspberry Pi OS (32-bit)` option which will download the latest version of Debian Linux for the Raspberry Pi (called `Bullseye` at the time of writing this guide). Then click the `Choose Storage` button and select the SD card you connected to your computer. After choosing the SD card, click the `Write` button to install the operating system.
+
+::: {#fig-rpi-imager}
+![](images/rpi-imager.png)
+
+Raspberry Pi Imager screenshot
+:::
+
+#### Configuring the OS for Headless Operation
+
+After installing the OS, re-mount the SD card (most easily done by removing and then re-inserting the SD card). The new volume should be called "boot". Next you will need to make a few changes to the files on the card to configure it for headless operation before continuing.
+
+1.  Open `config.txt` and append `dtoverlay=dwc2` in a new line at the end of the file.
+2.  Open a terminal window (`Terminal` on MacOS/Linux/Unix or `Powershell` on Windows) and create a new file. Navigate to the `boot` volume and create a new file called `ssh` with no file extension using either `touch ssh` on Unix or `echo >> ssh` on Windows. (You may also create a new file with a text editor like VS Code and save it with the name `ssh`, again without a file extension).
+3.  Finally, open the file called `cmdline.txt`, look for the text `rootwait` and add the following right after it `modules-load=dwc2,g_ether`. The formatting of cmdline.txt is very strict; commands are separated by spaces. Be sure not to add any additional newline characters.
+
+Now eject the SD card, install it in the Pi, and connect your Pi to your computer via USB using the port labeled USB (not PWR_IN!)
+
+### Connecting to the Raspberry Pi Using SSH
+
+After connecting it to your computer, you should see the activity LED light up (note there is no power LED on the Pi Zero) and after it finishes booting, you should see the Pi show up as a new network interface with a self-assigned IP address.
+
+We will be communicating with our Pi over ssh or Secure Shell. [ssh](https://en.wikipedia.org/wiki/Secure_Shell) is a very popular cryptographic network protocol which is used to communicate securely over an unsecured network.
+
+After you see the Pi get an IP address, you should be able to ssh into the Pi in terminal. Open your terminal emulator up again and type `ssh pi@raspberrypi.local` or `ssh pi@<ip_addr>` where `<ip_addr>` is the IP address you saw the Pi was assigned in the previous step. `raspberrypi.local` is a dynamic nameserver (DNS) shortcut which redirects to the IP for the Pi and is a handy shortcut to save you the step of looking up the actual assigned address.
+
+After typing this command you should get a message back that the connection has been made and if it is the first time you ssh in, you will also get a prompt asking you to add the Pi to the list of known hosts. (Note: If you have ever sshed into a different rasperrypi.local device you may see an error about a duplicate in your ssh known_hosts. To fix this, navigate to the known_hosts file and remove the line corresponding to raspberrypi.local.)
+
+You will then get a prompt for the password for the `pi` user which is `raspberry` by default. After entering it, you should see a message that you have been logged in. Using the default password is a security hazard, so the first thing you should do is set a new one. Enter `passwd` at the command line prompt and follow the prompts to set a new login password for the user `pi`.
+
+### Connecting to the Internet
+
+There are two ways to connect to the Internet from the Pi. You may either connect directly to WiFi or you can share the Internet connection from your host computer. You may choose either option and follow the instructions below to set it up.
+
+### Connecting to WiFi Directly
+
+To connect to WiFi directly, run `sudo raspi-config` and then navigate to `1 System Options > S1 Wireless LAN` and enter your SSID and password to connect.
+
+### Sharing Internet from Host Machine Over USB
+
+To get internet on your Pi we will share the network connection from your host machine over the USB connection. To do this, To do this, edit the `/etc/network/interfaces` file. You'll need to edit it with sudo (i.e., admin) privileges. An easy way to do this is with the nano text editor. To open the file to edit, type `sudo nano /etc/network/interfaces` at your Pi’s command prompt (over ssh).
+
+Modify the file to have the following contents
+
+``` bash
+# Setup USB internet
+auto lo usb0 
+allow-hotplug usb0
+iface usb0 inet manual
+```
+
+When you are finished, the file should look like this.
+
+::: {#fig-network-interfaces-file}
+![](images/edited-hosts-file.png)
+
+Edited `/etc/network/interfaces/` file
+:::
+
+When you finish editing the file, exit out of the file saving changes using `ctrl + x` and then reboot your Pi by typing `sudo reboot`.
+
+Now that the Pi is configured to connect to the internet over USB, you need to configure your host to share its internet connection. Follow the instructions [here](https://learn.adafruit.com/turning-your-raspberry-pi-zero-into-a-usb-gadget/ethernet-tweaks#sharing-network-access-to-your-pi-2127626-6) to configure your host. After you configure it, test that it is working properly by trying to ping a website like google from your Pi (e.g., by running `ping google.com`) from the command line.
+
+After setting up the internet connection, update your packages by running `sudo apt-get update` and responding `y` to any prompts.
+
+### Enable and Setup Virtual Network Computing (VNC) Interface
+
+To enable the VNC interface, first run the raspi-config tool by typing `sudo raspi-config` at the prompt on your Pi. Then navigate to option `3 Interface Options` and select option `I3 VNC`. Make sure that `<Yes>` is selected. After exiting the raspi-config interface you may need to reboot to see changes take effect (you can do so by typing `sudo reboot`.
+
+You will also need to install a VNC viewer on your host computer. A popular free option is VNC Viewer from RealVNC available for download [here](https://www.realvnc.com/en/connect/download/viewer/).
+
+After downloading VNC Viewer and enabling VNC on your Pi, you can connect to a virtual desktop. Open VNC Viewer and type the IP address of your Pi (e.g., raspberrypi.local) in the address bar at the top of the window. Press enter and you should see a window showing the Raspberry Pi desktop.
+
+While you are configuring the VNC, you should also configure the VNC server to enable direct capture mode. This is important for viewing some windows (the libcamera preview window is one important example) over VNC. To do this, on the Raspberry Pi desktop click on VNC icon in the top right of the menubar. Then click on the icon with 3 horizontal bars at the top right of the VNC Server window and select `Options`. In the options window, select `Troubleshooting` and then check the checkbox `Enable direct capture mode`. Click OK to apply the changes and close the window.
+
+You may also want to configure the VNC resolution if it does not look as you wish on your host. You can change these settings in the raspi-config utility under menu option `2 Display Options`.
+
+### Setup Samba Share
+
+Next we will configure Server Message Block (SMB) or Samba file sharing from the Pi. This will enable you to share a folder on the Raspberry Pi so that you can easily transfer data between the Pi and your host computer using a file browser such as Finder on MacOS or Explorer on Windows.
+
+To set up the sharing, we will use the aptitude package manager `apt`. The first step is to update the package manager by running `sudo apt-get update` and after that finishes running `sudo apt-get upgrade`. After both commands finish, install Samba packages by running `sudo apt-get install samba samba-common-bin` (You may get a message about changing the DHCP settings. You should be able to choose either option.)
+
+Then create a new folder in your home directory to store shared files by running `mkdir /home/pi/shared`.
+
+Now we need to set up Samba to share this folder over the network. First open the Samba configuration file by typing `sudo nano /etc/samba/smb.conf`. This will open the file in nano which is a command line text editor. Scroll to the bottom and add the following lines to the file.
+
+``` bash
+[CameraSTEMsShared]
+path = /home/pi/shared
+writeable=Yes
+create mask=0777
+directory mask=0777
+public=no
+```
+
+Next, set up a new user for accessing the Samba share. Run `sudo smbpasswd -a pi` and then enter a password. This password can be distinct from your user password.
+
+Finally, restart the samba service by running `sudo systemctl restart smbd`.
+
+Now that configuration is done on the Pi, the final step is to set up access from your host.
+
+-   On Mac, go to Finder and navigate to `Go \> Connect to Server`. Then connect to the server `smb://<hostname_ip>/CameraSTEMsShared` where `<hostname_ip>` is the IP address of your Pi. You can either use the `raspberrypi.local` dynamic address or find the current IP address of your Pi by running `hostname -I` on the Pi. Login with the username `pi` and the password you set for the samba share.
+-   On Windows, open Explorer and click on the Computer tab at the top of the Window. On the top bar, click `Map network drive`. Then in the Folder path field, enter `\<hostname_ip\>\CameraSTEMsShared`. Make sure to tick `Connect using different credentials` so that it prompts you for the username and password you set up. When you enter your username, you’ll need to use a backslash before your user name (e.g. `\pi`) so that it does not try to login on the workspace of your host computer. After clicking `Finish` then enter your user details and click ok.
+
+### Setting up Python Virtual Environment
+
+In this section, you will set up a Python virtual environment. Virtual environments enable you to set up an isolated environment containing only specific packages and versions without requiring you to have these packages installed globally. This avoids conflicts and compatibility issues with different packages.
+
+To set up the virtual environment, navigate to your /home/pi/shared directory and run ​​`python3 -m venv /home/pi/shared/.env`. This will create a new virtual environment and store the files within the folder `.env`. The dot preceding the folder name means that it is hidden which is helpful to avoid cluttering your terminal output. (Hint: you can see all files in a directory by running the list command ls with the -a flag which stands for all).
+
+After creating your virtual environment, we need to activate it. To do this navigate to `/home/pi/shared` and then run `source .env/bin/activate`. This will run a shell script which will reconfigure your path variables to point to the version of Python and the packages installed in your environment as opposed to those installed on your system by default. After you activate the environment, you should see the name of the environment listed in parentheses at the left of the command prompt (e.g., (.env) in our case). To deactivate your virtual environment, enter `deactivate` at the command prompt.
+
+To confirm that your virtual environment is working properly, deactivate the environment and run the command `which python3`. The `which` command returns the path where a command is located. This should return `/usr/bin/python3` which is the standard location for the Python binary on our system. Then, activate your virtual environment and run `which python3` again. Now you should see that the path to python3 is now changed to point to the version of python which is installed in our virtual environment.
+
+::: {#fig-venv-setup}
+![](images/venv-setup.png)
+
+Virtual environment setup.
+:::
+
+### Installing the Camera
+
+#### Enable Camera Interface
+
+By default the camera interface on your Pi may not be enabled. To make sure it is turned on, use the raspi-config utility to enable it. At the command prompt type `sudo raspi-config`. Then navigate to the `Interfacing Options` sub-menu and select the appropriate option to enable the camera. Then shutdown your Pi by running `sudo halt`, waiting a minute for the LED to turn off, and disconnecting it from the USB cable.
+
+#### Connecting the Camera to Your Pi
+
+Next, you will connect the Raspberry Pi NoIR camera module to your Pi. Take out the camera module and the camera cable. Then connect the small end of the cable to the camera interface on your Pi and the other wider end of the cable to your camera module. You may need to gently pull the black plastic parts of the receptacles on the Pi and the camera PCB so that you can insert the cable. Then insert the camera cable. Note that the orientation of the cable matters. On both sides, the contacts of the cable (i.e., the metal strips where the connection is made) should be oriented so that they face toward the PCBs. After you firmly seat the cable into the receptacle, gently push the black plastic piece in toward the connector to lock the ribbon cable in. Now your camera is connected and you are ready to take your first picture. Plug the power cable back in and boot your Pi up before continuing to the next section.
+
+### Take Your First Picture
+
+In this section you will take your first image with your camera. We will be using the Python library picamera to control the Raspberry Pi camera and to capture and save images. In this section we will walk through how to install the package in your virtual environment and take your first picture!
+
+#### Install picamera
+
+Once you have your virtual environment set up, now we want to install the picamera library which will enable us to access and control our camera from Python. To do this, we’ll use the Python package manager `pip`. First, activate your environment. Then, run `pip3 list`. This will print out a list of all the packages installed in your environment. You should see a list of the default packages installed in our environment (probably just pip, pkg-resources, setuptools). To install picamera, run `pip3 install picamera` (Note: you can also use `pip` instead of `pip3` but it is safer to use `pip3` to ensure that the packages are installed for Python 3 instead of Python 2).
+
+After running this command, run `pip3 list`. You should see that `picamera` has been added to the list of installed modules.
+
+#### Take Your First Image
+
+Now let’s use picamera to take an image. Open a new Python interpreter by running `python3`. Then import picamera by running `import picamera`. Then create a PiCamera object called cam by running `cam = picamera.PiCamera()`.
+
+Now you can take an image using the `capture` method that is a member of the PiCamera class (and thus our PiCamera object `cam`). To save an image named `hello_raspberry.jpg` run `cam.capture(‘hello_raspberry.jpg’)`. In your host OS, navigate to the shared folder and you should see a new saved image file. Open it and check it out.
+
+Now, of course you don’t want to have to manually type commands one by one at the command line. Create a new file (the easiest way to do this is to type `touch <file_name>` on your Pi). Then you can edit it either in the terminal using your favorite terminal text editor or by opening the file on your host OS via the mounted SMB shared network drive. Type the code below into a file called `save_image_to_file.py` and save it. Then run the script from the command line by running `python3 save_image_to_file.py`. You should see
+
+``` bash
+# Import libraries
+from time import sleep
+from picamera import PiCamera
+
+# Create camera object
+cam = PiCamera()
+# Camera warm-up time
+sleep(2)
+print("Camera is ready!")
+# Capture the camera image and save it to disk
+cam.capture('hello_raspberry.jpg')
+print("Photo captured and saved.")
+# Close the camera object
+cam.close()
+```
+
+Code listing for save_image_to_file.py
+
+### Process Image in Python
+
+Next we will load the image in Python to do some simple analysis and inspection. Since the Raspberry Pi has limited computational power compared to your host machine, it makes sense to do processing on your host OS. For this course we will do all of our programming in Python. You can use any Python environment that you would like (e.g., raw scripts run from terminal, PyCharm, IPython notebooks either locally or on Colab, etc.). In this section we will go through setting up Spyder which is a development environment for Python which features a very similar layout and feel to Matlab.
+
+#### Download Spyder
+
+First, navigate to the [website for Spyder](https://www.spyder-ide.org) and download the installer. After installing the program, open it up. You will be presented with the home view. (Note: On macOS you may need to navigate to your Applications folder and launch Sypder by right clicking on it and clicking `Open` when opening it for the first time to get around the operating system’s gatekeeper functionality)
+
+## Image Acquisition and Analysis Experiments
+
+After you have finished setting up the image acquisition and analysis pipeline, in this section you will use your system to run a few experiments to analyze different performance specifications of the Raspberry Pi Camera. The suggested workflow is to write your code on an editor on your host machine and then run it on your Pi via ssh. For example, you could create a new Python script saved in the directory shared via Samba. Then, on your Pi you can run the script from the command line (e.g., with by running `python3 \<script_name\>` in the shared directory) and save your data. Finally, you can then load the files on your host machine in Spyder to do the plotting and analysis required.
+
+The following sections list a series of tasks for you to accomplish and submit in your lab writeup.
+
+###  Image with Scale Bar
+
+Take an image of an object and plot it in Python using matplotlib and the imshow function. In your plot, make sure to label the axes along with units, give your plot a descriptive title, and use a colorbar.
+
+The recommended method for creating plots in Python is to use the subplots function to generate a figure and axes object which can be manipulated after it is created as shown in the example code snippet below.
+
+``` python
+import matplotlib.pyplot as plt           # import matplotlib
+fig, ax = plt.subplots(nrows=1, ncols=1)  # create subplots
+im_data = plt.imread("test_image.jpg")    # load image
+him = ax.imshow(im_data)                  # plot image and save handle
+```
+
+Whenever you are plotting images it is critical to visually indicating the scale of the objects in the photo. One way to do this is to directly calculate the magnification of the object and then use this information to convert pixel number to a physical length in the image. A simpler way is to measure the size in pixels of an object of known length in your image and use this to calculate the size of a pixel in your image in physical units of length such as meters or centimeters.
+
+For your image, use something that is of known length in your image to calculate the le ngth of the object in pixels. Then, plot a rectangle on top of the image by creating a rectangle patch and adding it to your axis. See the link [here](https://stackoverflow.com/questions/37435369/matplotlib-how-to-draw-a-rectangle-on-image) for an example. Then add text to your image above the scale bar to indicate its length. You may find the [documentation for the text function](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html) provided in matplotlib helpful.
+
+The image below provides an example of what an image with scale bar should look like.
+
+::: {#fig-example-image}
+![](images/demo-image.png){fig-align="center" width="205"}
+
+An example of a scale bar on a microscope image. From: <a href="https://doi.org/10.1038/s41566-017-0078-z">https://doi.org/10.1038/s41566-017-0078-z</a>
+:::
+
+### Raw Bayer Image Capture
+
+Color camera sensors are typically formed by putting an array of red, green, and blue filters over the monochrome pixels. A popular configuration is the [Bayer color filter array](https://en.wikipedia.org/wiki/Bayer_filter) (CFA). In this section, you will take and save the raw Bayer data from the sensor. Read the PiCamera documentation [here](https://picamera.readthedocs.io/en/release-1.13/api_array.html#picamera.array.PiBayerArray) on the PiBayerDataArray data structure and use it to capture a Bayer array and save to file. An easy way to save the data is to use the numpy function [save](https://numpy.org/doc/stable/reference/generated/numpy.save.html) to save the raw data to an .npy file. Then the raw data can be reloaded on your host computer using the corresponding [load](https://numpy.org/doc/stable/reference/generated/numpy.load.html#numpy.load) function in numpy.
+
+In your analysis, plot each color channel of the image separately (e.g., separate plots for the red, green, and blue channels) and answer the following questions.
+
+1.  What is the size of the Bayer image data structure?
+2.  What does each dimension represent?
+3.  Which channel of your captured image is the brightest? Is this what you expect? Why or why not?
+
+### Dark Noise Analysis
+
+The dark noise value is the value of the image data captured when the sensor is covered (i.e., not exposed to light). Cover your sensor and capture a series of 10 dark frames and answer the following questions. Plot the average image (i.e., 2D image where each pixel is an average of its values across the frames). Then for the red channel of the image only answer the following questions.
+
+1.  What is the mean value of the red channel of your image sequence?
+2.  What is the standard deviation of this array of means calculated from your image sequence?
+
+### Image Intensity vs. Exposure Time
+
+Another important property of a camera is its linearity. In this section, you will take an exposure series and analyze how the average intensity of the sensor varies with exposure time. See the documentation [here](https://picamera.readthedocs.io/en/release-1.13/recipes1.html#capturing-consistent-images) which will help provide information on how to take consistent images by disabling any automatic exposure compensation and directly setting the exposure time (called shutter_speed in picamera).
+
+Uncover your sensor and take a set of images across a variety of exposure times. Take 10 images at each exposure time and vary the exposure time over three orders of magnitude (e.g., from 1 ms to 1 second) with at least 5 different exposure times. Then take the average of the images at each exposure time and the standard deviation of these average intensities. Then, plot the means vs. exposure time on a linear plot with error bars to indicate the standard deviation of the mean values calculated at each exposure time (hint: check out the [errorbar](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.errorbar.html?highlight=errorbar#matplotlib.axes.Axes.errorbar) plotting function in matplotlib). Fit the data with a line and report back both the slope of the line and its $R^2$ value. You may find [this tutorial](https://www.geeksforgeeks.org/scipy-curve-fitting/) on curve fitting in Python helpful.
+
+## FAQs
+
+::: {.callout-note collapse="true"}
+## Enabling virtual enviornment
+
+Run `source .env/bin/activate` to enable virtual environment and `deactivate` to disable.
+:::
+
+::: {.callout-note collapse="true"}
+## Getting an error when trying to run a script
+
+Make sure you are running things on the right machine (host vs. Pi)
+:::

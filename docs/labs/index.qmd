@@ -1,0 +1,17 @@
+---
+title: Labs Overview
+---
+
+Here is a listing of the labs available to explore.
+
+## [Hello World](./lab1/)
+
+Contains instructions on getting your Raspberry Pi configured and taking your first picture.
+
+## [Introduction to Ray Tracing](./lab2/)
+
+This lab contains instructions on performing ray tracing simulations on the design for the 3d-printed microscope platform.
+
+## [3d-printed Microscope Assembly](./lab3/)
+
+This lab contains instructions on building and testing your 3d-printed microscope platform.
