@@ -13,19 +13,19 @@ website:
         menu:
         - text: Labs Overview
           href: labs/
-        - text: Lab 1
+        - text: "Lab 1: Hello World"
           href: labs/lab1/
-        - text: Lab 2
+        - text: "Lab 2: Intro to Ray Tracing"
           href: labs/lab2/
-        - text: Lab 3
+        - text: "Lab 3: 3d-printed Microscope"
           href: labs/lab3/
-      - text: Lecture
 
 format:
   html:
     theme: cosmo
     css: styles.css
     toc: true
+    number-sections: true
 
 
 
