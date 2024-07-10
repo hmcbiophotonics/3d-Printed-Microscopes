@@ -43,8 +43,7 @@ module DotstarArrayMount() {
       tab_centers_y = [(dotstar_w - dotstar_tab_w)/2, -(dotstar_w - dotstar_tab_w)/2, (dotstar_w - dotstar_tab_w)/2, -(dotstar_w - dotstar_tab_w)/2];
       
       for(i = [0:3]) {
-              translate([tab_centers_x[i],tab_centers_y[i],hat_thickness - dotstar_thickness]) cube([dotstar_tab_w + 0.01, dotstar_tab_w + 0.01, 4], center=true); 
-          
+          translate([tab_centers_x[i],tab_centers_y[i],hat_thickness - dotstar_thickness]) cube([dotstar_tab_w + 0.01, dotstar_tab_w + 0.01, 4], center=true); 
           translate([tab_centers_x[i],tab_centers_y[i],0]) cylinder(hat_thickness+0.01, d=3, center=true);
       }
   }
