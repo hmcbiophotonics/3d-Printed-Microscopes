@@ -2,6 +2,7 @@ from fourierptychography import FourierPtychography as FP
 from plot import Plot
 from matplotlib import pyplot as plt
 from matplotlib.widgets import Slider
+from mpl_toolkits.axes_grid1 import make_axes_locatable # For nice colorbars
 import numpy as np
 import os
 import sys
@@ -14,6 +15,7 @@ f_stop             = 2.0
 aperture_diameter  = focal_length / f_stop
 front_stop_sep     = 1e-3
 magnification      = 1.5049504950495052
+magnification = 1.5
 object_dist        = ((1 + magnification) / magnification) * focal_length
 image_dist         = magnification * object_dist
 #num_aperture       = np.sin(np.arctan(0.5 * aperture_diameter / (object_dist - front_stop_sep)))
@@ -62,10 +64,43 @@ FPM.create_configuration(config)
 packed = np.zeros((numim,int(m/2),int(n/2)))
 packed = sample[:,1::2,1::2]
 [cx,cy] = FP.get_LED_center(packed[24].copy())
+[cx,cy] = [880,520]
 
-size = 128
+size = 64
 cropped = packed[:,cy-size:cy+size,cx-size:cx+size]
 
-recovered, recoveredFT, trackRecoveredFT = FPM.recover(cropped)
+loop = 5
+pupil = 1
+recovered, recoveredFT, trackRecoveredFT, pupil = FPM.recover(cropped,loop,pupil)
 
-PLOT = Plot(packed,cropped,recoveredFT, trackRecoveredFT)
+
+def add_colorbar(him, ax, cbar_title=""):
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    cbar = fig.colorbar(him, cax=cax)
+    cbar.set_label(cbar_title, rotation=270, labelpad=15)
+
+ims = [0,0,0]
+fig, axs = plt.subplots(3,1,figsize=(4,10))
+plt.suptitle(f'{loop} loops')
+ims[0] = axs[0].imshow(abs(recovered),cmap='gray')
+axs[0].set_title("Recovered Object", va='center', rotation='vertical',x=-0.1,y=0.5)
+ims[1] = axs[1].imshow(abs(pupil),cmap='gray')
+axs[1].set_title("Recovered Pupil (Fourier Spectrum)", va='center',rotation='vertical',x=-0.1,y=0.5)
+origin = np.array([0+10,127-10])
+kx = np.array([1,0])
+ky = np.array([0,1])
+axs[1].quiver(*origin,*kx,color='r',scale=10)
+axs[1].quiver(*origin,*ky,color='r',scale=10)
+axs[1].text(*(origin+17.5*kx),'$k_x$',color='r',ha='center',va='center')
+axs[1].text(*(origin-17.5*ky),'$k_y$',color='r',ha='center',va='center')
+ims[2] = axs[2].imshow(np.angle(pupil),cmap='gray')
+axs[2].set_title("Recovered Pupil (Phase)", va='center',rotation='vertical',x=-0.1,y=0.5)
+for i in range(len(axs)):
+    add_colorbar(ims[i],axs[i])
+    axs[i].set_xticks([])
+    axs[i].set_yticks([])
+plt.show()
+
+
+#PLOT = Plot(packed,cropped,recoveredFT, trackRecoveredFT)

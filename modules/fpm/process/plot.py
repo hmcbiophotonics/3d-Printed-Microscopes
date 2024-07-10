@@ -61,8 +61,8 @@ class Plot():
         self.axs[0,1].add_artist(scalebar)
 
         self.axs[0,2].set_title("Recovered Progression")
-        self.t1 = self.axs[0,2].imshow(self.normalize(np.abs(self.trackRecovered[self.image_idx])))
-        self.t2 = self.axs[1,2].imshow(np.log(abs(self.trackRecoveredFT[self.image_idx])))
+        self.t1 = self.axs[0,2].imshow(abs(self.trackRecovered[self.image_idx])/np.max(abs(self.trackRecovered[self.image_idx])))
+        self.t2 = self.axs[1,2].imshow(np.log(abs(self.trackRecoveredFT[self.image_idx]))[384:640,384:640])
         self.t3 = self.axs[2,2].imshow(np.angle(self.trackRecovered[self.image_idx]))
 
         scalebar = ScaleBar(1.12e-6/4*2,color='red',frameon=False,location='lower right')
@@ -98,7 +98,7 @@ class Plot():
                             location='lower right'
                             )
         ax.add_artist(scalebar)
-        plt.savefig('figure2.png')
+        #plt.savefig('figure2.png')
 
         fig2,axs2 = plt.subplots(3,1)
         axs2[0].set_title("Final Recovered")
@@ -119,7 +119,8 @@ class Plot():
                             location='lower right'
                             )
         ax.add_artist(scalebar)
-        plt.savefig('figure3.png')
+        plt.show()
+        #plt.savefig('figure3.png')
 
     def update(self,val):
         self.image_idx = int(self.slider.val)
@@ -129,16 +130,11 @@ class Plot():
         self.u1.set_data(self.cropped[self.seq[self.image_idx]])
         self.u2.set_data(np.log(abs(np.fft.fftshift(np.fft.fft2(self.cropped[self.seq[self.image_idx]])))))
 
-        self.t1.set_data(self.normalize(abs(self.trackRecovered[self.image_idx])))
-        self.t2.set_data(np.log(abs(self.trackRecoveredFT[self.image_idx])))
+        self.t1.set_data(abs(self.trackRecovered[self.image_idx])/np.max(abs(self.trackRecovered[self.image_idx])))
+        self.t2.set_data(np.log(abs(self.trackRecoveredFT[self.image_idx]))[384:640,384:640])
         self.t3.set_data(np.angle(self.trackRecovered[self.image_idx]))
 
         self.fig.canvas.draw_idle()
-
-    def normalize(self, image):
-        """ Normalize image to range [0, 1] """
-        norm_image = (image - np.min(image)) / (np.max(image) - np.min(image))
-        return norm_image
 
     def on_key_press(self,event):
         if event.key == 'left':

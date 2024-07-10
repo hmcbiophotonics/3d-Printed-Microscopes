@@ -2,6 +2,7 @@
 from PIL import Image
 import numpy as np
 from matplotlib import pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable # For nice colorbars
 from decimal import Decimal, ROUND_HALF_UP
 
 def fft2(x):
@@ -61,11 +62,11 @@ object = amplitude * np.exp(1j * phase)
 plt.figure()
 plt.imshow(abs(object),cmap='gray')
 
-arraysize = 15
+arraysize = 7
 xlocation = np.zeros(arraysize**2)
 ylocation = np.zeros(arraysize**2)
-LEDgap = 4
-LEDheight = 90
+LEDgap = 3.175e-3
+LEDheight = 60e-3
 
 for i in range(arraysize):
     xlocation[i*arraysize:arraysize*(i+1)] = np.arange(-(arraysize-1)/2*LEDgap,arraysize/2*LEDgap,LEDgap)
@@ -74,11 +75,11 @@ for i in range(arraysize):
 kx_relative = -np.sin(np.arctan(xlocation/LEDheight))
 ky_relative = -np.sin(np.arctan(ylocation/LEDheight))
 
-wavelength = .63e-6;
+wavelength = 623e-9
 k0 = 2*np.pi/wavelength;
-spsize = 2.75e-6;
+spsize = 1.12e-6 * 2/1.5;
 psize = spsize/4;
-NA = .08;
+NA = .18;
 [m,n] = object.shape
 
 m1 = int(m/(spsize/psize))
@@ -125,7 +126,7 @@ for tt in range(loop):
 
         lowResFT_1 = (m1/m)**2 * objectRecoverFT[kyl-1:kyh,kxl-1:kxh]*CTF*pupil
         im_lowRes = ifft2(ifftshift(lowResFT_1))
-        im_lowRes = (m/m1)**2 * imSeqLowRes[:,:,i3]*np.exp(1j*np.angle(im_lowRes))
+        im_lowRes = (m/m1)**2 * imSeqLowRes[:,:,i2]*np.exp(1j*np.angle(im_lowRes))
         lowResFT_2 = fftshift(fft2(im_lowRes))*CTF*(1/pupil)
 
         objectRecoverFT[kyl-1:kyh,kxl-1:kxh]=objectRecoverFT[kyl-1:kyh,kxl-1:kxh] \
@@ -137,10 +138,33 @@ for tt in range(loop):
                 * (lowResFT_2 - lowResFT_1)
 
 objectRecover = ifft2(ifftshift(objectRecoverFT))
-plt.figure()
-plt.imshow(np.log(abs(objectRecoverFT)))
-plt.figure()
-plt.imshow(abs(objectRecover),cmap='gray')
-plt.figure()
-plt.imshow(abs(pupil),cmap='gray')
+
+
+def add_colorbar(him, ax, cbar_title=""):
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    cbar = fig.colorbar(him, cax=cax)
+    cbar.set_label(cbar_title, rotation=270, labelpad=15)
+
+ims = [0,0,0]
+fig, axs = plt.subplots(3,1,figsize=(4,10))
+plt.suptitle(f'{loop} loops')
+ims[0] = axs[0].imshow(abs(objectRecover),cmap='gray')
+axs[0].set_title("Recovered Object", va='center', rotation='vertical',x=-0.1,y=0.5)
+ims[1] = axs[1].imshow(abs(pupil),cmap='gray')
+axs[1].set_title("Recovered Pupil (Fourier Spectrum)", va='center',rotation='vertical',x=-0.1,y=0.5)
+origin = np.array([0+10,127-10])
+kx = np.array([1,0])
+ky = np.array([0,1])
+axs[1].quiver(*origin,*kx,color='r',scale=10)
+axs[1].quiver(*origin,*ky,color='r',scale=10)
+axs[1].text(*(origin+17.5*kx),'$k_x$',color='r',ha='center',va='center')
+axs[1].text(*(origin-17.5*ky),'$k_y$',color='r',ha='center',va='center')
+ims[2] = axs[2].imshow(np.angle(pupil),cmap='gray')
+axs[2].set_title("Recovered Pupil (Phase)", va='center',rotation='vertical',x=-0.1,y=0.5)
+for i in range(len(axs)):
+    add_colorbar(ims[i],axs[i])
+    axs[i].set_xticks([])
+    axs[i].set_yticks([])
 plt.show()
+
