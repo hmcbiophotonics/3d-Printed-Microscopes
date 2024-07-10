@@ -4,6 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable # For nice colorbars
 from decimal import Decimal, ROUND_HALF_UP
+from zernikepy import zernike_polynomials
 
 def fft2(x):
     return np.fft.fft2(x)
@@ -61,11 +62,12 @@ object = amplitude * np.exp(1j * phase)
 
 plt.figure()
 plt.imshow(abs(object),cmap='gray')
+plt.title('Initial Complex Object Amplitude')
 
-arraysize = 7
+arraysize = 15
 xlocation = np.zeros(arraysize**2)
 ylocation = np.zeros(arraysize**2)
-LEDgap = 3.175e-3
+LEDgap = 3.05e-3
 LEDheight = 60e-3
 
 for i in range(arraysize):
@@ -97,17 +99,26 @@ kmax = np.pi/spsize
         np.arange(-kmax,kmax+kmax/((n1-1)/2),kmax/((n1-1)/2))
         )
 CTF = ((kxm**2 + kym**2) < cutoffFrequency**2)
+zernike_p = zernike_polynomials(mode=5, size = 128) # mode 4 is defocus
+
+PUPIL = CTF * np.exp(1j * zernike_p)
+
+plt.figure()
+plt.imshow(np.angle(PUPIL))
+plt.title('Pupil Function Phase')
+
 objectFT = fftshift(fft2(object))
 for tt in range(arraysize**2):
     kxc = round((n+1)/2+kx[tt]/dkx)
     kyc = round((m+1)/2+ky[tt]/dky)
     kyl = round(kyc-(m1-1)/2); kyh = round(kyc+(m1-1)/2)
     kxl = round(kxc-(n1-1)/2); kxh = round(kxc+(n1-1)/2)
-    imSeqLowFT = (m1/m)**2 * objectFT[kyl-1:kyh,kxl-1:kxh] * CTF
+    imSeqLowFT = (m1/m)**2 * objectFT[kyl-1:kyh,kxl-1:kxh] * PUPIL
     imSeqLowRes[:,:,tt] = np.abs(ifft2(ifftshift(imSeqLowFT)))
 
 plt.figure()
 plt.imshow(imSeqLowRes[:,:,0],cmap='gray')
+plt.title('0th Low Res Image')
 
 seq = gseq(arraysize)
 
@@ -151,16 +162,18 @@ fig, axs = plt.subplots(3,1,figsize=(4,10))
 plt.suptitle(f'{loop} loops')
 ims[0] = axs[0].imshow(abs(objectRecover),cmap='gray')
 axs[0].set_title("Recovered Object", va='center', rotation='vertical',x=-0.1,y=0.5)
-ims[1] = axs[1].imshow(abs(pupil),cmap='gray')
+ims[1] = axs[1].imshow(abs(pupil))
 axs[1].set_title("Recovered Pupil (Fourier Spectrum)", va='center',rotation='vertical',x=-0.1,y=0.5)
+
 origin = np.array([0+10,127-10])
 kx = np.array([1,0])
 ky = np.array([0,1])
+
 axs[1].quiver(*origin,*kx,color='r',scale=10)
 axs[1].quiver(*origin,*ky,color='r',scale=10)
 axs[1].text(*(origin+17.5*kx),'$k_x$',color='r',ha='center',va='center')
 axs[1].text(*(origin-17.5*ky),'$k_y$',color='r',ha='center',va='center')
-ims[2] = axs[2].imshow(np.angle(pupil),cmap='gray')
+ims[2] = axs[2].imshow(np.angle(pupil))
 axs[2].set_title("Recovered Pupil (Phase)", va='center',rotation='vertical',x=-0.1,y=0.5)
 for i in range(len(axs)):
     add_colorbar(ims[i],axs[i])
