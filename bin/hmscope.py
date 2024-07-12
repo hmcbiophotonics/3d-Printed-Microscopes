@@ -8,9 +8,12 @@ import paramiko
 
 username = 'hmcbiophotonics'
 hostname = 'hmcpi0.local'
+cwd = os.getcwd()
+hmscope_path = os.path.abspath(__file__)
+hmscope_dir = os.path.dirname(hmscope_path)
+repo_dir = os.path.abspath(os.path.join(hmscope_dir,'..'))
 
 def subcommand_process(args):
-    cwd = os.getcwd()
     if(not os.path.exists(args.module)):
         print(f'Processing module {args.module} does not exist')
         sys.exit(1)
@@ -31,7 +34,10 @@ def subcommand_rpi_connect(args):
 
 def subcommand_rpi_sync(args):
     # any remote rpi commands should go here
+    
     print("Syncing into pi")
+    rpi_path = os.path.join(repo_dir,'rpi')
+    subprocess.run(['rsync','-avz','--delete',rpi_path,f'{username}@{hostname}:~/'])
 
 def subcommand_rpi_capture(args):
     print("Capturing module")
