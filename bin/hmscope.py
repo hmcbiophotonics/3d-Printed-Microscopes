@@ -7,8 +7,7 @@ import subprocess
 import paramiko
 
 username = 'hmcbiophotonics'
-hostname = 'raspberrypi.local'
-key_filename = ''
+hostname = 'hmcpi0.local'
 
 def subcommand_process(args):
     cwd = os.getcwd()
@@ -27,7 +26,7 @@ def subcommand_rpi_connect(args):
     client.load_system_host_keys()
     client.connect(hostname=hostname,
                    username=username,
-                   key_filename=key_filename)
+                   )
     stdin, stdout, stderr = client.exec_command('ls -l')
 
 def subcommand_rpi_sync(args):
