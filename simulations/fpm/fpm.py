@@ -6,6 +6,26 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable # For nice colorbars
 from decimal import Decimal, ROUND_HALF_UP
 from zernikepy import zernike_polynomials
 
+def add_kvector(him,ax):
+    offset_percent = 0.05
+    img = him.get_array()
+    height,width = img.shape
+    text_offset = 0.15 * (height + width)/2
+    origin = np.array([width*offset_percent,height*(1-offset_percent)])
+    kx = np.array([1,0])
+    ky = np.array([0,1])
+    ax.quiver(*origin,*kx,color='r',scale=10)
+    ax.quiver(*origin,*ky,color='r',scale=10)
+    ax.text(*(origin+text_offset*kx),'$k_x$',color='r',ha='center',va='center')
+    ax.text(*(origin-text_offset*ky),'$k_y$',color='r',ha='center',va='center')
+
+
+def add_colorbar(him, ax, cbar_title=""):
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    cbar = fig.colorbar(him, cax=cax)
+    cbar.set_label(cbar_title, rotation=270, labelpad=15)
+
 def fft2(x):
     return np.fft.fft2(x)
 
@@ -55,8 +75,8 @@ def gseq(arraysize):
     seq = (sequence[0,:]-1)*arraysize+sequence[1,:] - 1
     return seq
 
-amplitude = np.asarray(Image.open('../figures/monkey_gray.png'),dtype=np.float64)
-phase = np.asarray(Image.open('../figures/landscape_gray.png'),dtype=np.float64)
+amplitude = np.asarray(Image.open('./monkey_gray.png'),dtype=np.float64)
+phase = np.asarray(Image.open('./landscape_gray.png'),dtype=np.float64)
 phase = np.pi * phase / np.max(phase)
 object = amplitude * np.exp(1j * phase)
 
@@ -103,9 +123,10 @@ zernike_p = zernike_polynomials(mode=5, size = 128) # mode 4 is defocus
 
 PUPIL = CTF * np.exp(1j * zernike_p)
 
-plt.figure()
-plt.imshow(np.angle(PUPIL))
-plt.title('Pupil Function Phase')
+fig,ax = plt.subplots()
+im = ax.imshow(np.angle(PUPIL))
+add_colorbar(im,ax,"rad")
+ax.set_title('Initial Zernike Pupil Function Phase')
 
 objectFT = fftshift(fft2(object))
 for tt in range(arraysize**2):
@@ -151,33 +172,21 @@ for tt in range(loop):
 objectRecover = ifft2(ifftshift(objectRecoverFT))
 
 
-def add_colorbar(him, ax, cbar_title=""):
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
-    cbar = fig.colorbar(him, cax=cax)
-    cbar.set_label(cbar_title, rotation=270, labelpad=15)
 
 ims = [0,0,0]
-fig, axs = plt.subplots(3,1,figsize=(4,10))
+fig, axs = plt.subplots(3,1,figsize=(6,10))
 plt.suptitle(f'{loop} loops')
 ims[0] = axs[0].imshow(abs(objectRecover),cmap='gray')
 axs[0].set_title("Recovered Object", va='center', rotation='vertical',x=-0.1,y=0.5)
 ims[1] = axs[1].imshow(abs(pupil))
 axs[1].set_title("Recovered Pupil (Fourier Spectrum)", va='center',rotation='vertical',x=-0.1,y=0.5)
-
-origin = np.array([0+10,127-10])
-kx = np.array([1,0])
-ky = np.array([0,1])
-
-axs[1].quiver(*origin,*kx,color='r',scale=10)
-axs[1].quiver(*origin,*ky,color='r',scale=10)
-axs[1].text(*(origin+17.5*kx),'$k_x$',color='r',ha='center',va='center')
-axs[1].text(*(origin-17.5*ky),'$k_y$',color='r',ha='center',va='center')
+add_kvector(ims[1],axs[1])
 ims[2] = axs[2].imshow(np.angle(pupil))
 axs[2].set_title("Recovered Pupil (Phase)", va='center',rotation='vertical',x=-0.1,y=0.5)
 for i in range(len(axs)):
     add_colorbar(ims[i],axs[i])
     axs[i].set_xticks([])
     axs[i].set_yticks([])
+add_colorbar(ims[2],axs[2],'rad')
 plt.show()
 
