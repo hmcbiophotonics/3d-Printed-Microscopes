@@ -180,7 +180,11 @@ while (pixel < filt.size - 1):
         fe_pixels.append(pixel)
     pixel = pixel + 1
 widths = np.array(re_pixels) - np.array(fe_pixels)
-total_width = fe_pixels[2] - re_pixels[0]
+try:
+    total_width = fe_pixels[2] - re_pixels[0]
+except Exception as e:
+    print(e)
+    total_width = 5
 print(f"Raw pixel widths for each bar: {widths}")
 print(f"Raw rising-edge pixels: {re_pixels}")
 print(f"Raw falling-edge pixels: {fe_pixels}")
@@ -193,6 +197,7 @@ print(f"Avg bar width pixels: {avg_width}")
 group = 4
 element = 2
 resolution = 2**(group + (element - 1)/6) # (lp/mm)
+print(f"Resolution: {resolution}")
 
 # one lp consists of two bars, thus the width of a bar should be equivalent to
 # 1/(2*resolution)
