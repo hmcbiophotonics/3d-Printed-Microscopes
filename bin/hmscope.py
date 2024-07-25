@@ -38,8 +38,7 @@ def subcommand_rpi_sync(args):
     print("Syncing into pi")
     local_rpi_path = os.path.join(repo_dir,'rpi/')
     remote_rpi_path = f'{username}@{hostname}:~/rpi/'
-    subprocess.run(['rsync','-avz',local_rpi_path,remote_rpi_path])
-    subprocess.run(['rsync','-avz',remote_rpi_path,local_rpi_path])
+    subprocess.run(['rsync','-avz','--exclude','*.npy',local_rpi_path,remote_rpi_path])
 
 def subcommand_rpi_capture(args):
     print("Capturing module")
