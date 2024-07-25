@@ -138,14 +138,14 @@ for tt in range(arraysize**2):
     imSeqLowRes[:,:,tt] = np.abs(ifft2(ifftshift(imSeqLowFT)))
 
 plt.figure()
-plt.imshow(imSeqLowRes[:,:,0],cmap='gray')
+plt.imshow(imSeqLowRes[:,:,100],cmap='gray')
 plt.title('0th Low Res Image')
 
 seq = gseq(arraysize)
 
 objectRecover = np.ones((m,n))
 objectRecoverFT = fftshift(fft2(objectRecover))
-loop = 5
+loop = 10
 pupil = 1
 for tt in range(loop):
     for i3 in range(arraysize**2):
@@ -173,20 +173,22 @@ objectRecover = ifft2(ifftshift(objectRecoverFT))
 
 
 
-ims = [0,0,0]
-fig, axs = plt.subplots(3,1,figsize=(6,10))
+ims = [0,0,0,0]
+fig, axs = plt.subplots(4,1,figsize=(6,10))
 plt.suptitle(f'{loop} loops')
 ims[0] = axs[0].imshow(abs(objectRecover),cmap='gray')
 axs[0].set_title("Recovered Object", va='center', rotation='vertical',x=-0.1,y=0.5)
-ims[1] = axs[1].imshow(abs(pupil))
-axs[1].set_title("Recovered Pupil (Fourier Spectrum)", va='center',rotation='vertical',x=-0.1,y=0.5)
-add_kvector(ims[1],axs[1])
-ims[2] = axs[2].imshow(np.angle(pupil))
-axs[2].set_title("Recovered Pupil (Phase)", va='center',rotation='vertical',x=-0.1,y=0.5)
+ims[1] = axs[1].imshow(np.angle(objectRecover),cmap='gray')
+axs[1].set_title("Recovered Object Phase", va='center', rotation='vertical',x=-0.1,y=0.5)
+ims[2] = axs[2].imshow(abs(pupil))
+axs[2].set_title("Recovered Pupil (Fourier Spectrum)", va='center',rotation='vertical',x=-0.1,y=0.5)
+add_kvector(ims[2],axs[2])
+ims[3] = axs[3].imshow(np.angle(pupil))
+axs[3].set_title("Recovered Pupil (Phase)", va='center',rotation='vertical',x=-0.1,y=0.5)
 for i in range(len(axs)):
     add_colorbar(ims[i],axs[i])
     axs[i].set_xticks([])
     axs[i].set_yticks([])
-add_colorbar(ims[2],axs[2],'rad')
+add_colorbar(ims[3],axs[3],'rad')
 plt.show()
 
