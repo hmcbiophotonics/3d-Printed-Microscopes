@@ -7,11 +7,13 @@ import subprocess
 import paramiko
 
 username = 'hmcbiophotonics'
-hostname = 'raspberrypi.local'
-key_filename = ''
+hostname = 'hmcpi0.local'
+cwd = os.getcwd()
+hmscope_path = os.path.abspath(__file__)
+hmscope_dir = os.path.dirname(hmscope_path)
+repo_dir = os.path.abspath(os.path.join(hmscope_dir,'..'))
 
 def subcommand_process(args):
-    cwd = os.getcwd()
     if(not os.path.exists(args.module)):
         print(f'Processing module {args.module} does not exist')
         sys.exit(1)
@@ -27,12 +29,16 @@ def subcommand_rpi_connect(args):
     client.load_system_host_keys()
     client.connect(hostname=hostname,
                    username=username,
-                   key_filename=key_filename)
+                   )
     stdin, stdout, stderr = client.exec_command('ls -l')
 
 def subcommand_rpi_sync(args):
     # any remote rpi commands should go here
+    
     print("Syncing into pi")
+    local_rpi_path = os.path.join(repo_dir,'rpi/')
+    remote_rpi_path = f'{username}@{hostname}:~/rpi/'
+    subprocess.run(['rsync','-avz','--exclude','*.npy',local_rpi_path,remote_rpi_path])
 
 def subcommand_rpi_capture(args):
     print("Capturing module")

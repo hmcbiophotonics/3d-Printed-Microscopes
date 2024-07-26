@@ -3,7 +3,9 @@ from matplotlib import pyplot as plt
 from matplotlib import animation as animation
 from decimal import Decimal, ROUND_HALF_UP
 from argparse import Namespace
+from numpy.fft import ifftshift
 from scipy import integrate
+import cv2
 
 
 DEFAULT_CONFIG = {
@@ -35,10 +37,17 @@ class FourierPtychography():
     def create_configuration(self, config={}):
         self.config = config
         return config
-
+    
+    @staticmethod
+    def ft2(m):
+        return np.fft.fftshift(np.fft.fft2(m))
 
     @staticmethod
-    def round_hu(number):
+    def ift2(m):
+        return np.fft.ifft2(np.fft.ifftshift(m))
+
+    @staticmethod
+    def round(number):
         """
         A better round function
 
@@ -75,33 +84,22 @@ class FourierPtychography():
         return xavg,yavg
 
     @staticmethod
-    def make_spiral_seq(x,y,arraysize):
-        """
-        counterclockwise spiral sequence generator for led matrix where (0,0) is bottom left
-    
-        Args:
-            x: center x position of spiral
-            y: center y position of spiral
-            arraysize: number of used leds
-            matrixsize: number of total leds
-Returns:
-            seq: sequence of the indexes of leds
-    
-        """
-        idx = x + (arraysize-y-1)*arraysize
-        x = y = 0
+    def make_spiral_seq(arraysize):
+        #x = arraysize // 2
+        #y = arraysize // 2
+        x = 0
+        y = 0
+        dy = 1
         dx = 0
-        dy = -1
+        matrix = np.arange(arraysize**2)
+        matrix = np.reshape(matrix,(arraysize,arraysize))
         seq = []
         for i in range(arraysize**2):
-            if (-arraysize/2 < x <= arraysize/2) and (-arraysize < y <= arraysize/2):
-                seq.append(idx)
-            if x == y or (x < 0 and x == -y) or (x > 0 and y == 1-x):
-                dx, dy = -dy, dx
-            idx = idx + dx
-            idx = idx + arraysize*dy
+            seq.append(matrix[arraysize//2-y,x+arraysize//2])
             x = x + dx
             y = y + dy
+            if (y==-x) or (y < 0 and y == x) or (y > 0 and y == x + 1):
+                dx,dy = -dy,dx
         return seq
 
     def create_vectors(self):
@@ -124,13 +122,14 @@ Returns:
         for i in range(arraysize):
             xlocation[i*arraysize:arraysize*(i+1)] = np.arange(-(arraysize-1)/2*led_sep,arraysize/2*led_sep,led_sep)
             ylocation[i*arraysize:arraysize*(i+1)] = ((arraysize-1)/2-i)*led_sep
-        #kx = -np.sin(np.arctan(xlocation/led_dist))
-        #ky = -np.sin(np.arctan(ylocation/led_dist))  
         kx = -xlocation/(np.sqrt(xlocation**2+ylocation**2+led_dist**2))
         ky = -ylocation/(np.sqrt(xlocation**2+ylocation**2+led_dist**2))
+        plt.figure()
+        plt.plot(kx,ky,'bo')
+        plt.show()
         return kx,ky
 
-    def recover(self,seqlowres):
+    def recover(self,seqlowres,loop,pupil):
         """
         Recover the hi-res image
         
@@ -166,43 +165,44 @@ Returns:
 
         [kxm,kym] = np.meshgrid(kx2,ky2)
 
+
         CTF = ((kxm**2 + kym**2) < cutoffFrequency**2) #Coherent Transfer Function Filter
 
-        seq = self.make_spiral_seq(3,3,self.config["arraysize"])
+        seq = self.make_spiral_seq(self.config["arraysize"])
 
-        recoveredObject = np.ones((m,n))
-        recoveredObjectFT = np.fft.fftshift(np.fft.fft2(recoveredObject))
+        recoveredObject = np.mean(seqlowres,axis=0)
+        recoveredObject = cv2.resize(recoveredObject,[m,n],interpolation=cv2.INTER_CUBIC)
+        recoveredObjectFT = self.ft2(recoveredObject)
 
         trackRecoveredFT = []
-        pupils = []
 
-        loop = 5
-        pupil = 1
+        pupil = CTF
+
         for tt in range(loop):
             for i3 in range(numim):
                 i2 = int(seq[i3])
-                kxc = self.round_hu((n+1)/2+kx[i2]/dkx)
-                kyc = self.round_hu((m+1)/2-ky[i2]/dky)
-                kxl = self.round_hu(kxc-(n1-1)/2)
-                kxh = self.round_hu(kxc+(n1-1)/2)
-                kyl = self.round_hu(kyc-(m1-1)/2)
-                kyh = self.round_hu(kyc+(m1-1)/2)
 
-                lowResFT_1 = (m1/m)**2 * recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] * CTF * pupil
-                lowResIm = np.fft.ifft2(np.fft.ifftshift(lowResFT_1))
-                lowResIm = (m/m1)**2 * seqlowres[i2,:,:] * np.exp(1j * np.angle(lowResIm))
-                lowResFT_2 = np.fft.fftshift(np.fft.fft2(lowResIm)) * CTF * (1/pupil)
-                recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] = recoveredObjectFT[kyl:kyh+1,kxl:kxh+1] \
-                    + np.conj(pupil) / (np.max(abs(pupil)**2)) \
-                        * (lowResFT_2 - lowResFT_1)
-                pupil = pupil + np.conj(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1]) \
-                    / (np.max(abs(recoveredObjectFT[kyl:kyh+1,kxl:kxh+1])**2)) \
+                kxc = self.round((n+1)/2+kx[i2]/dkx)
+                kyc = self.round((m+1)/2-ky[i2]/dky)
+                kxl = self.round(kxc-(n1-1)/2); kxh = self.round(kxc+(n1-1)/2)
+                kyl = self.round(kyc-(m1-1)/2); kyh = self.round(kyc+(m1-1)/2)
+                lowResFT_1 = (m1/m)**2 * recoveredObjectFT[kyl-1:kyh,kxl-1:kxh] * pupil
+                lowResIm = self.ift2(lowResFT_1)
+                lowResIm = (m/m1)**2 * seqlowres[i2,:,:] * lowResIm / np.abs(lowResIm)
+                lowResFT_2 = self.ft2(lowResIm)
+
+                recoveredObjectFT[kyl-1:kyh,kxl-1:kxh] = recoveredObjectFT[kyl-1:kyh,kxl-1:kxh] \
+                    + np.conj(pupil) / (np.max(np.abs(pupil)**2)) \
                     * (lowResFT_2 - lowResFT_1)
 
-                if (tt == 0):
-                    trackRecoveredFT.append(recoveredObjectFT.copy())
-                    pupils.append(pupil.copy())
+                pupil = pupil + np.conj(recoveredObjectFT[kyl-1:kyh,kxl-1:kxh]) \
+                    / (np.max(np.abs(recoveredObjectFT[kyl-1:kyh,kxl-1:kxh])**2)) \
+                    * (lowResFT_2 - lowResFT_1)
+                pupil = pupil * CTF
+                trackRecoveredFT.append(recoveredObjectFT.copy())
 
-        recoveredObject = np.fft.ifft2(np.fft.ifftshift(recoveredObjectFT))
+        recoveredObject = self.ift2(recoveredObjectFT)
+        # clean the pupil function
+        pupil = np.where(np.abs(pupil) == 0, 0+0j, pupil)
 
-        return recoveredObject, recoveredObjectFT, trackRecoveredFT
+        return recoveredObject, recoveredObjectFT, trackRecoveredFT, pupil
