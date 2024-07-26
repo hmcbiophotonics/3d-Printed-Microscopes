@@ -37,6 +37,9 @@ path.append(Lens(f=f1, diameter=lens_diameter))
 path.append(Space(d=path.intermediateConjugates()[-1][0]-working_distance-front_stop_sep))
 path.append(Aperture(diameter=camera_sensor_diagonal_diameter))
 
+axialRay = path.axialRay()
+print(axialRay.theta)
+
 
 path.display(rays=rays, removeBlocked=False)
 print(f"Object height is: {path.objectHeight}")
